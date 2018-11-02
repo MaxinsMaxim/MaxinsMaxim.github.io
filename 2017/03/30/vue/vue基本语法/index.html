@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="vue," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="v-for
+data是数据 可以是任意类型（函数不要在这里声明）
+循环数组，要循环谁，就在谁身上写v-for, 可以使用 in 或者 of
+可以遍历数组 字符串 对象
+
+event事件
+根组件，在vue中操作的都是数据 不是DOM元素
+v-on代表的是指令可以用来绑定事件,绑定事件执行括号，不需要传递参数则不加 v-on:keyup=”addFruits”
+v-on:keyup 可以简写为 @ke">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vue基本语法">
+<meta property="og:url" content="http://www.imaxin.cn/2017/03/30/vue/vue基本语法/index.html">
+<meta property="og:site_name" content="Maxin`s blog">
+<meta property="og:description" content="v-for
+data是数据 可以是任意类型（函数不要在这里声明）
+循环数组，要循环谁，就在谁身上写v-for, 可以使用 in 或者 of
+可以遍历数组 字符串 对象
+
+event事件
+根组件，在vue中操作的都是数据 不是DOM元素
+v-on代表的是指令可以用来绑定事件,绑定事件执行括号，不需要传递参数则不加 v-on:keyup=”addFruits”
+v-on:keyup 可以简写为 @ke">
+<meta property="og:updated_time" content="2018-09-11T17:02:35.896Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="vue基本语法">
+<meta name="twitter:description" content="v-for
+data是数据 可以是任意类型（函数不要在这里声明）
+循环数组，要循环谁，就在谁身上写v-for, 可以使用 in 或者 of
+可以遍历数组 字符串 对象
+
+event事件
+根组件，在vue中操作的都是数据 不是DOM元素
+v-on代表的是指令可以用来绑定事件,绑定事件执行括号，不需要传递参数则不加 v-on:keyup=”addFruits”
+v-on:keyup 可以简写为 @ke">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.imaxin.cn/2017/03/30/vue/vue基本语法/"/>
+
+
+
+
+
+  <title>vue基本语法 | Maxin`s blog</title>
+  
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/css/prism-solarizedlight.css" type="text/css"><script src="/js/prism.js"></script></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Maxin`s blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.imaxin.cn/2017/03/30/vue/vue基本语法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Maxin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Maxin`s blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">vue基本语法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-30T18:12:23+08:00">
+                2017-03-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/vue/" itemprop="url" rel="index">
+                    <span itemprop="name">vue</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="v-for"><a href="#v-for" class="headerlink" title="v-for"></a>v-for</h3><ol>
+<li>data是数据 可以是任意类型（函数不要在这里声明）</li>
+<li>循环数组，要循环谁，就在谁身上写v-for, 可以使用 in 或者 of</li>
+<li>可以遍历数组 字符串 对象</li>
+</ol>
+<h3 id="event事件"><a href="#event事件" class="headerlink" title="event事件"></a>event事件</h3><ol>
+<li>根组件，在vue中操作的都是数据 不是DOM元素</li>
+<li>v-on代表的是指令可以用来绑定事件,绑定事件执行括号，不需要传递参数则不加 v-on:keyup=”addFruits”</li>
+<li>v-on:keyup 可以简写为 @keyup</li>
+<li>在vue中methods中的方法里的this指向都是vm(实例)</li>
+<li>如果写绑定的函数加 () 需要手动传入事件源$event</li>
+<li>v-show 操作的是css样式，如果不满足条件则display: none</li>
+<li>v-if操作的dom元素，默认不满足条件时 dom不存在，满足后则增加dom元素</li>
+<li>频繁操作显示和隐藏，使用v-show</li>
+</ol>
+<h3 id="修饰符"><a href="#修饰符" class="headerlink" title="修饰符"></a>修饰符</h3><ol>
+<li>按键修饰符，vue提供了大量的按键修饰符 space esc left right … 可以用keyCode代替</li>
+<li>a: 65  enter: 13</li>
+<li>当keyCode 等于写的值的时候触发事件</li>
+<li>事件冒泡: 阻止冒泡 .stop<br>事件捕获: 将事件模式变成捕获 .capture<br>只自己触发: .self<br>阻止默认事件: .prevent</li>
+<li>修饰符可以累加使用</li>
+<li>.once 绑定一次，执行一次后解绑事件</li>
+<li>绑定动态数据用v-bind 简写 :</li>
+</ol>
+<h3 id="动态绑定class-style-样式"><a href="#动态绑定class-style-样式" class="headerlink" title="动态绑定class style 样式"></a>动态绑定class style 样式</h3><ol>
+<li>动态绑定的class和原生的class 可以共存,动态覆盖静态</li>
+<li>对象绑定方式  {样式：条件，样式1：条件}</li>
+<li>数组绑定方式</li>
+<li>对象 + 数组</li>
+<li>绑定动态属</li>
+<li>动态绑定的class和原生的class 可以共存,动态覆盖静态</li>
+</ol>
+<pre class=" language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>back<span class="token punctuation">"</span></span> <span class="token attr-name">:class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>{font:flag}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>红色背景<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">:class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>[b, {font:flag}, <span class="token punctuation">'</span>box<span class="token punctuation">'</span>]<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>红色背景<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">:</span><span class="token style-attr language-css"><span class="token attr-name"><span class="token attr-name">style</span></span><span class="token punctuation">="</span><span class="token attr-value"><span class="token punctuation">{</span><span class="token property">background</span><span class="token punctuation">:</span><span class="token string">'green'</span>,<span class="token property">fontSize</span><span class="token punctuation">:</span><span class="token string">'50px'</span><span class="token punctuation">}</span></span><span class="token punctuation">"</span></span><span class="token punctuation">></span></span>绿色<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">:</span><span class="token style-attr language-css"><span class="token attr-name"><span class="token attr-name">style</span></span><span class="token punctuation">="</span><span class="token attr-value">[s<span class="token number">1</span>, s<span class="token number">2</span>]</span><span class="token punctuation">"</span></span><span class="token punctuation">></span></span>行内样式<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+</code></pre>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">var</span> vm <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Vue</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    el<span class="token punctuation">:</span> <span class="token string">'#app'</span><span class="token punctuation">,</span>
+    data<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+        flag<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+        b<span class="token punctuation">:</span> <span class="token string">'back'</span><span class="token punctuation">,</span>
+        c<span class="token punctuation">:</span> <span class="token string">'font'</span><span class="token punctuation">,</span>
+        s1<span class="token punctuation">:</span> <span class="token punctuation">{</span>background<span class="token punctuation">:</span> <span class="token string">'limegreen'</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+        s2<span class="token punctuation">:</span> <span class="token punctuation">{</span>color<span class="token punctuation">:</span> <span class="token string">'yellow'</span><span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<h3 id="computed-计算属性"><a href="#computed-计算属性" class="headerlink" title="computed 计算属性"></a>computed 计算属性</h3><ol>
+<li>计算”属性” 不是方法 可以根据已有属性 推断出一个新的属性来<pre><code>{{ sum() }}
+</code></pre><blockquote>
+<p>如果这样绑定，时刻监听 数据的变化，只要有数据边，不管和sum函数有没有关系都会执行</p>
+</blockquote>
+</li>
+<li>计算属性，根据某个值计算出新值，当这个值变化后会重新计算，别的数据改变不会收到影响<pre class=" language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>app<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+ {{ sum }}
+ 价格 {{ price }}
+ 数量 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>text<span class="token punctuation">"</span></span> <span class="token attr-name">v-model</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>count<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+ 名字 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>text<span class="token punctuation">"</span></span> <span class="token attr-name">v-model</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>name<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+</code></pre>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">var</span> vm <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Vue</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+ el<span class="token punctuation">:</span> <span class="token string">'#app'</span><span class="token punctuation">,</span>
+ data<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+     price<span class="token punctuation">:</span> <span class="token number">100</span><span class="token punctuation">,</span>
+     count<span class="token punctuation">:</span> <span class="token number">10</span><span class="token punctuation">,</span>
+     name<span class="token punctuation">:</span> <span class="token string">'飞机'</span>
+ <span class="token punctuation">}</span><span class="token punctuation">,</span>
+ methods<span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+ computed<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+     <span class="token comment" spellcheck="true">// sum属性由两部分组成 （获取，设置）</span>
+     sum<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+         <span class="token keyword">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment" spellcheck="true">// 展示就是获取</span>
+             <span class="token comment" spellcheck="true">// 如果price和count变化会导致 sum变化</span>
+             <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span>price <span class="token operator">*</span> <span class="token keyword">this</span><span class="token punctuation">.</span>count<span class="token punctuation">;</span>
+         <span class="token punctuation">}</span><span class="token punctuation">,</span>
+         <span class="token keyword">set</span><span class="token punctuation">(</span>val<span class="token punctuation">)</span> <span class="token punctuation">{</span>  <span class="token comment" spellcheck="true">// vm.sum = 100;</span>
+             <span class="token comment" spellcheck="true">// sum变化有可能会改变name变化，computed属性中this依然是vm</span>
+         <span class="token punctuation">}</span>
+     <span class="token punctuation">}</span>
+ <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+</li>
+</ol>
+<h3 id="全选和反选"><a href="#全选和反选" class="headerlink" title="全选和反选"></a>全选和反选</h3><ol>
+<li>点击全选可以控制 下面的所有checkbox，如果有一个chekbox没选中 全选为不选中状态</li>
+<li>全选的值依赖于下面的checkbox，如果都为true则选中，给全选赋值要改变下面的checkbox的值<pre><code>全选 &lt;input type=&quot;checkbox&quot; v-model=&quot;checkAll&quot;&gt;&lt;br&gt;
+ &lt;input type=&quot;checkbox&quot; v-for=&quot;check in checkList&quot; v-model=&quot;check.isChecked&quot;&gt;
+</code></pre><pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">var</span> vm <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Vue</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+ el<span class="token punctuation">:</span> <span class="token string">'#app'</span><span class="token punctuation">,</span>
+ data<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+     checkList<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>isChecked<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>isChecked<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>isChecked<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">}</span><span class="token punctuation">]</span>
+ <span class="token punctuation">}</span><span class="token punctuation">,</span>
+ methods<span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+ computed<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+     checkAll<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+         <span class="token keyword">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+             <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span>checkList<span class="token punctuation">.</span><span class="token function">every</span><span class="token punctuation">(</span><span class="token punctuation">(</span>item<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+                 <span class="token keyword">return</span> item<span class="token punctuation">.</span>isChecked<span class="token punctuation">;</span>
+             <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+         <span class="token punctuation">}</span><span class="token punctuation">,</span>
+         <span class="token keyword">set</span><span class="token punctuation">(</span>val<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+             <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> v <span class="token keyword">of</span> <span class="token keyword">this</span><span class="token punctuation">.</span>checkList<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                 v<span class="token punctuation">.</span>isChecked <span class="token operator">=</span> val<span class="token punctuation">;</span>
+             <span class="token punctuation">}</span>
+         <span class="token punctuation">}</span>
+     <span class="token punctuation">}</span>
+ <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+</li>
+</ol>
+<h3 id="watch"><a href="#watch" class="headerlink" title="watch"></a>watch</h3><pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">var</span> vm <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Vue</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    el<span class="token punctuation">:</span> <span class="token string">'#app'</span><span class="token punctuation">,</span>
+    data<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+        message<span class="token punctuation">:</span> <span class="token string">'hello'</span><span class="token punctuation">,</span>
+        content<span class="token punctuation">:</span> <span class="token string">''</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    watch<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+        <span class="token function">message</span><span class="token punctuation">(</span>newValue<span class="token punctuation">,</span> oldValue<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">this</span><span class="token punctuation">.</span>content <span class="token operator">=</span> <span class="token string">'等待中...'</span><span class="token punctuation">;</span>
+            <span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                vm<span class="token punctuation">.</span>content <span class="token operator">=</span> newValue <span class="token operator">+</span> <span class="token string">', maxin'</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token number">2000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<ol>
+<li>computed 适合做复杂逻辑，简单的只能给watch,当一个值改变触发某件事时，使用watch</li>
+<li>如果是”异步”并且有”中间过程”，用watch</li>
+<li>methods watch computed 区别</li>
+</ol>
+<blockquote>
+<p>一般来说watch方法只能监听一级,如果需要深度监听</p>
+</blockquote>
+<pre><code>watch(){
+    todos: {
+        handler(){
+            // 将todos存到本地 设置key和value, value会被自动toString
+            localStorage.setItem(&#39;todos&#39;, JSON.stringify(this.todos));
+        },
+        deep: true  // 深度监控,只要todos有变化，就会执行此监控
+    }
+}
+</code></pre>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/vue/" rel="tag"># vue</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/10/29/base/dom/" rel="next" title="DOM库及常用方法封装">
+                <i class="fa fa-chevron-left"></i> DOM库及常用方法封装
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/03/30/vue/数组方法/" rel="prev" title="es5和es6中的一些好用的数组方法">
+                es5和es6中的一些好用的数组方法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Maxin</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#v-for"><span class="nav-number">1.</span> <span class="nav-text">v-for</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#event事件"><span class="nav-number">2.</span> <span class="nav-text">event事件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#修饰符"><span class="nav-number">3.</span> <span class="nav-text">修饰符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#动态绑定class-style-样式"><span class="nav-number">4.</span> <span class="nav-text">动态绑定class style 样式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#computed-计算属性"><span class="nav-number">5.</span> <span class="nav-text">computed 计算属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#全选和反选"><span class="nav-number">6.</span> <span class="nav-text">全选和反选</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#watch"><span class="nav-number">7.</span> <span class="nav-text">watch</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Maxin</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

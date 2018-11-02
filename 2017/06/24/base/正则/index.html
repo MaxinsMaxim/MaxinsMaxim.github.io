@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="正则," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="正则用法：
+验证字符串是否符合正则所指定的规则 =&amp;gt; 注册输入用户名密码
+把符合规则的字符串部分从字符串捕获 =&amp;gt; 从名字中获取到姓氏ps：基本就是用来操作字符串的。验证：reg.test(‘’)捕获：reg.exec(‘’)
+
+var reg = /a/;  //只要字符串中包含字母a就可以
+var str = &apos;abdkfa&apos;;
+reg.test(str);
+
+特殊的元字符
+\d">
+<meta property="og:type" content="article">
+<meta property="og:title" content="正则">
+<meta property="og:url" content="http://www.imaxin.cn/2017/06/24/base/正则/index.html">
+<meta property="og:site_name" content="Maxin`s blog">
+<meta property="og:description" content="正则用法：
+验证字符串是否符合正则所指定的规则 =&amp;gt; 注册输入用户名密码
+把符合规则的字符串部分从字符串捕获 =&amp;gt; 从名字中获取到姓氏ps：基本就是用来操作字符串的。验证：reg.test(‘’)捕获：reg.exec(‘’)
+
+var reg = /a/;  //只要字符串中包含字母a就可以
+var str = &apos;abdkfa&apos;;
+reg.test(str);
+
+特殊的元字符
+\d">
+<meta property="og:updated_time" content="2018-09-11T12:29:38.476Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="正则">
+<meta name="twitter:description" content="正则用法：
+验证字符串是否符合正则所指定的规则 =&amp;gt; 注册输入用户名密码
+把符合规则的字符串部分从字符串捕获 =&amp;gt; 从名字中获取到姓氏ps：基本就是用来操作字符串的。验证：reg.test(‘’)捕获：reg.exec(‘’)
+
+var reg = /a/;  //只要字符串中包含字母a就可以
+var str = &apos;abdkfa&apos;;
+reg.test(str);
+
+特殊的元字符
+\d">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.imaxin.cn/2017/06/24/base/正则/"/>
+
+
+
+
+
+  <title>正则 | Maxin`s blog</title>
+  
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/css/prism-solarizedlight.css" type="text/css"><script src="/js/prism.js"></script></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Maxin`s blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.imaxin.cn/2017/06/24/base/正则/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Maxin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Maxin`s blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">正则</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-24T22:05:18+08:00">
+                2017-06-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Javascript/" itemprop="url" rel="index">
+                    <span itemprop="name">Javascript</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="正则用法："><a href="#正则用法：" class="headerlink" title="正则用法："></a>正则用法：</h4><ol>
+<li>验证字符串是否符合正则所指定的规则 =&gt; 注册输入用户名密码</li>
+<li>把符合规则的字符串部分从字符串捕获 =&gt; 从名字中获取到姓氏<br>ps：基本就是用来操作字符串的。<br>验证：reg.test(‘’)<br>捕获：reg.exec(‘’)</li>
+</ol>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">var</span> reg <span class="token operator">=</span> <span class="token regex">/a/</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//只要字符串中包含字母a就可以</span>
+<span class="token keyword">var</span> str <span class="token operator">=</span> <span class="token string">'abdkfa'</span><span class="token punctuation">;</span>
+reg<span class="token punctuation">.</span><span class="token function">test</span><span class="token punctuation">(</span>str<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<h4 id="特殊的元字符"><a href="#特殊的元字符" class="headerlink" title="特殊的元字符"></a>特殊的元字符</h4><ul>
+<li>\d  :   0到9之间的任意一个数字  </li>
+<li>\w  :   数字字母下划线 0-9 a-z A-Z</li>
+<li>\s  :   空格或者空白等(tab等)</li>
+<li>\b  :   边界    =&gt;  不占位，字符串开始和结束，一些特殊字符的两边</li>
+<li>\n  :   匹配一个换行</li>
+<li>.   :   匹配任意字符除了\n</li>
+<li>^   :   以什么开始</li>
+<li>$   :   以什么结束</li>
+<li>.  :   “.”本身</li>
+<li>\   :   转义    =&gt;  把特殊意义的字符转变成本来的意思</li>
+<li>\D  :   除了\d</li>
+<li>\W  :   除了\w</li>
+<li>\S  :   除了\s</li>
+</ul>
+<p>ps：如果”^”和”$”同时出现，那么对这个字符串的个数就限制了</p>
+<h4 id="量词："><a href="#量词：" class="headerlink" title="量词："></a>量词：</h4><ul>
+<li>位置放在要修饰元字符的后面 =&gt; 修饰前面的元字符出现的次数  </li>
+</ul>
+<p>+: 1到多个 至少1个<br>*: 0到多个<br>?: 0-1个  要么出现要么不出现<br>{n}: 出现n个<br>{n,}: 至少n个<br>{n, m}: 出现n到m个</p>
+<h4 id="正则中的或者："><a href="#正则中的或者：" class="headerlink" title="正则中的或者："></a>正则中的或者：</h4><ol>
+<li>x|y ： x或者y中的一个  x|y|z   由于或者关系是满足其中一个就可以，所以处理或者关系的时候我们不妨用()去改变运算的优先级。</li>
+<li>[xyz]   ：   x或者y或者z中的一个</li>
+<li>[^xyz]  ：  只要字符串中有一个字符不是x也不是y也不是z就行   如果为false 就是只能有x或者y或者z</li>
+<li>[+-]    ：    “+” 或者 “-“中的一个</li>
+<li>[\d\w]  ：  数字字母中还有下划线中的一个</li>
+<li>\w  ：      [0-9a-zA-Z_]    “-“在[]代表的是到的意思</li>
+<li>[.] ：     代表不是任意字符，”.”本身</li>
+</ol>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token comment" spellcheck="true">//简单的有效数字验证</span>
+<span class="token keyword">var</span> reg <span class="token operator">=</span> <span class="token regex">/^[+-]?\d+(\.\d+)?$/</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> str <span class="token operator">=</span> <span class="token string">'0.555'</span><span class="token punctuation">;</span>
+reg<span class="token punctuation">.</span><span class="token function">test</span><span class="token punctuation">(</span>str<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token comment" spellcheck="true">// 简单的有效数字验证 ???</span>
+<span class="token comment" spellcheck="true">// +5  5  -5  0.5  0.05 0.005  +0.005 -0.005  55.5  -5555.5555</span>
+<span class="token keyword">var</span> reg <span class="token operator">=</span> <span class="token regex">/^[+-]?\d+(\.\d+)?$/</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>reg<span class="token punctuation">.</span><span class="token function">test</span><span class="token punctuation">(</span><span class="token string">"0.555"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>获得焦点：   光标  onfocus<br>失去焦点：   光标  onblur</p>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token operator">&lt;</span>input type<span class="token operator">=</span><span class="token string">"text"</span> id<span class="token operator">=</span><span class="token string">"input"</span><span class="token operator">/</span><span class="token operator">></span>
+<span class="token comment" spellcheck="true">//非空验证</span>
+<span class="token keyword">var</span> reg <span class="token operator">=</span><span class="token regex">/^\s*$/</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> input <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">'input'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+input<span class="token punctuation">.</span>onblur <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>reg<span class="token punctuation">.</span><span class="token function">test</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>value<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">'输入不能为空'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+input<span class="token punctuation">.</span>value<span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token regex">/(^ | +$)/g</span><span class="token punctuation">,</span> <span class="token string">''</span><span class="token punctuation">)</span><span class="token punctuation">;</span>   <span class="token comment" spellcheck="true">//去除首尾空格</span>
+</code></pre>
+<h4 id="正则创建方式的区别"><a href="#正则创建方式的区别" class="headerlink" title="正则创建方式的区别"></a>正则创建方式的区别</h4><p>区别：实例和字面量</p>
+<ol>
+<li>如果使用实例创建，特殊元字符\d需要在创建的时刻在前面添加一个”/“</li>
+<li>实例创建，new的过程中的第二个参数就是修饰符</li>
+<li>只要正则中有需要变量的时候，那么就只能使用实例的创建方式<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">var</span> reg <span class="token operator">=</span> <span class="token regex">/a/i</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> reg2 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">RegExp</span><span class="token punctuation">(</span><span class="token string">'\\d'</span><span class="token punctuation">,</span> <span class="token string">'i'</span><span class="token punctuation">)</span>
+</code></pre>
+修饰符：<br>/\d/i   =&gt;  匹配的时候忽略大小写<br>i   :   ignoreCase  忽略大小写<br>m   :   multiline   多行匹配<br>g   :   global  全局全文（一般用于捕获exec）</li>
+</ol>
+<h4 id="正则中的exec方法"><a href="#正则中的exec方法" class="headerlink" title="正则中的exec方法"></a>正则中的exec方法</h4><p>exec捕获结果：</p>
+<ol>
+<li>返回一个数组  [正则捕获回来的结果  index ： 捕获开始位置的索引， input ： 原有字符串]</li>
+<li>reg.lastIndex属性 =&gt;  下一次捕获从哪个索引位置开始，当捕获结果为null这个属性值会重新赋值为0，然后就又从开始捕获了</li>
+<li>match ： 1 返回一个数组； 2 把所有符合要求的一次性捕获回来<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">var</span> reg1 <span class="token operator">=</span> <span class="token regex">/\d+/g</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> str <span class="token operator">=</span> <span class="token string">'zf2017xyz20000'</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> result <span class="token operator">=</span> reg1<span class="token punctuation">.</span><span class="token function">exec</span><span class="token punctuation">(</span>str<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> arr <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token keyword">while</span> <span class="token punctuation">(</span>result<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+arr<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>result<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+result <span class="token operator">=</span> reg1<span class="token punctuation">.</span><span class="token function">exec</span><span class="token punctuation">(</span>str<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">var</span> reg1 <span class="token operator">=</span> <span class="token regex">/\d+/g</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> str <span class="token operator">=</span> <span class="token string">'zf2017xyz20000'</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> result <span class="token operator">=</span> str<span class="token punctuation">.</span><span class="token function">match</span><span class="token punctuation">(</span>reg1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+</li>
+</ol>
+<h4 id="正则中的分组和分组的引用"><a href="#正则中的分组和分组的引用" class="headerlink" title="正则中的分组和分组的引用"></a>正则中的分组和分组的引用</h4><p>? 用法：<br>1) ?  量词  0-1次<br>2) (?:\d….)  放在一个分组的开头，匹配不捕获  破坏分组  </p>
+<p>分组：<br>想获取到字符串中的一部分那么可以使用分组 =&gt; 在大正则中使用小括号<br>分组影响捕获结果：<br>exec捕获返回的结果数组，从第二项开始分别是分组捕获到的内容<br>分组的引用：<br>当后面出现的字符需要和前面保持一致，需要用到分组的引用。  aabb abab<br>    ps ： 括号从左到右依次出现的顺序作为分组顺序<br>    RegExp.$9 ： 保存着正则实例最后一次被使用的分组的内容</p>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">var</span> id <span class="token operator">=</span> <span class="token string">'421302199410040814'</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> reg <span class="token operator">=</span> <span class="token regex">/^\d{6}(\d{4})\d{6}(\d)(?:\d|X)$/</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>reg<span class="token punctuation">.</span><span class="token function">exec</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token string">'15089786666'</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> reg <span class="token operator">=</span> <span class="token regex">/(\d)\1\1\1/</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//4个相同的数字</span>
+<span class="token keyword">var</span> reg1 <span class="token operator">=</span> <span class="token regex">/(\d)(\d)\1\2/</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//abab</span>
+</code></pre>
+<h4 id="split的用法-："><a href="#split的用法-：" class="headerlink" title="split的用法 ："></a>split的用法 ：</h4><p>split的参数可以是一个正则，拆分字符串的时候会把正则匹配到的位置全部拆分，</p>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">var</span> str <span class="token operator">=</span> <span class="token string">'a b-c d'</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> res <span class="token operator">=</span> str<span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token regex">/[ -]/</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>res<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<h4 id="replace用法-："><a href="#replace用法-：" class="headerlink" title="replace用法 ："></a>replace用法 ：</h4><ol>
+<li>replace返回一个新的替换好的字符串    str = str.replace()  </li>
+<li>如果第二个参数是一个函数，是这个函数的返回值return来替换第一个参数所匹配到的内容<br> =&gt; 函数执行的次数取决于第一个参数正则成功匹配的次数  </li>
+<li>第二个参数函数中的arguments ：<br> =&gt; [总正则在当次执行匹配到的内容，从第二项开始分别分组n…，index :…,input:]  </li>
+<li>当第二个参数是”$1”字符串，如果有分组那么代表就是分组1<br>insertBefore(new, old)<br>replace(old, new)<br>replaceChild(new, old)<br>```javascript<br>var str = ‘zhu2018feng2017peixun’;<br>//str = str.replace(‘zhu’,’珠’);<br>var reg = /(\d+)/g;<br>str = str.replace(reg,function (res,$1,index,input){<br>console.log(arguments); // []<br>return ‘珠’;<br>});</li>
+</ol>
+<p>console.log(str);;</p>
+<pre><code>```javascript
+var str = &#39;abcdefg&#39;; // 遍历字符串
+str.replace(/(\w)/g,function (){
+    console.log(arguments[1])
+});
+</code></pre><pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">var</span> str <span class="token operator">=</span> <span class="token string">'1324134'</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//=> "伍叁壹贰肆"</span>
+<span class="token keyword">var</span> str1 <span class="token operator">=</span> <span class="token string">'零壹贰叁肆伍陆柒捌玖'</span><span class="token punctuation">;</span>
+str <span class="token operator">=</span> str<span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token regex">/\d/g</span><span class="token punctuation">,</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">return</span> str1<span class="token punctuation">.</span><span class="token function">charAt</span><span class="token punctuation">(</span>arguments<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 5 => '伍'  4 => '肆'</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>str<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">var</span> str <span class="token operator">=</span> <span class="token string">'2015zhufeng'</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> reg <span class="token operator">=</span> <span class="token regex">/(\d+)/g</span><span class="token punctuation">;</span>
+str <span class="token operator">=</span> str<span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span>reg<span class="token punctuation">,</span><span class="token string">'$1'</span><span class="token operator">+</span><span class="token string">'￥'</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//$1 是第一个分组</span>
+str<span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span>reg<span class="token punctuation">,</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">return</span> arguments<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">+</span> <span class="token string">'￥'</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>str<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<h4 id="利用replace完成几个例子"><a href="#利用replace完成几个例子" class="headerlink" title="利用replace完成几个例子"></a>利用replace完成几个例子</h4><p>把URL后面的字符串转换成为对象：</p>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">var</span> url <span class="token operator">=</span> <span class="token string">"www.baidu.com/s?wd=hh&amp;kw=xx"</span><span class="token punctuation">;</span>
+String<span class="token punctuation">.</span>prototype<span class="token punctuation">.</span>queryParamers <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">var</span> obj <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token keyword">var</span> reg <span class="token operator">=</span> <span class="token regex">/([^?=&amp;]+)=([^?=&amp;]+)/g</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span>reg<span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        obj<span class="token punctuation">[</span>arguments<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">=</span> arguments<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> obj<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+url<span class="token punctuation">.</span><span class="token function">queryParamers</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>如何找出一个字符串中出现最多的字符，出现几次？</p>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">var</span> str <span class="token operator">=</span> <span class="token string">'aabbccdda'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> obj <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+str<span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token regex">/\w/g</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>obj<span class="token punctuation">[</span>arguments<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        obj<span class="token punctuation">[</span>arguments<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">+</span><span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+        obj<span class="token punctuation">[</span>arguments<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">//console.log(obj);</span>
+<span class="token keyword">var</span> max <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">var</span> key <span class="token keyword">in</span> obj<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    obj<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">></span> max <span class="token operator">?</span> max <span class="token operator">=</span> obj<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token punctuation">:</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>max<span class="token punctuation">)</span>    <span class="token comment" spellcheck="true">// => 出现最多的次数</span>
+<span class="token keyword">var</span> arr <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">var</span> key <span class="token keyword">in</span> obj<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    obj<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">==</span> max <span class="token operator">?</span> arr<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>key<span class="token punctuation">)</span> <span class="token punctuation">:</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>arr<span class="token punctuation">)</span><span class="token punctuation">;</span>   <span class="token comment" spellcheck="true">// => 出现最多的字符</span>
+</code></pre>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/正则/" rel="tag"># 正则</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/04/15/vue/组件间的通信/" rel="next" title="组件间的通信">
+                <i class="fa fa-chevron-left"></i> 组件间的通信
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/09/14/sth/JavaScript异步编程的演变过程/" rel="prev" title="JavaScript异步编程的演变过程">
+                JavaScript异步编程的演变过程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Maxin</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#正则用法："><span class="nav-number">1.</span> <span class="nav-text">正则用法：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#特殊的元字符"><span class="nav-number">2.</span> <span class="nav-text">特殊的元字符</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#量词："><span class="nav-number">3.</span> <span class="nav-text">量词：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#正则中的或者："><span class="nav-number">4.</span> <span class="nav-text">正则中的或者：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#正则创建方式的区别"><span class="nav-number">5.</span> <span class="nav-text">正则创建方式的区别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#正则中的exec方法"><span class="nav-number">6.</span> <span class="nav-text">正则中的exec方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#正则中的分组和分组的引用"><span class="nav-number">7.</span> <span class="nav-text">正则中的分组和分组的引用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#split的用法-："><span class="nav-number">8.</span> <span class="nav-text">split的用法 ：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#replace用法-："><span class="nav-number">9.</span> <span class="nav-text">replace用法 ：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#利用replace完成几个例子"><span class="nav-number">10.</span> <span class="nav-text">利用replace完成几个例子</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Maxin</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
