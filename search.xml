@@ -81,18 +81,17 @@ export default {
 <span class="token punctuation">}</span>
 </code></pre>
 <p><strong>5. Header、Footer等公共组件放哪？</strong><br><strong>vue-cli入口文件是app.vue，在nuxt开发当中则是./layout/default.vue</strong></p>
-<pre class=" language-vue"><code class="language-vue"><template>
-  <div id="app">
-    <!-- 公共头部组件 -->
-    <xxx-header></xxx-header>
-    <!-- 路由视图，相当于router-view -->
-    <nuxt/>
-    <!-- 公共底部组件 -->
-    <xxx-footer></xxx-footer>
-  </div>
-</template>
-</code></pre>
-<p><strong>6. 没有keep-alive</strong><br><strong>由于是服务端渲染，所以不支持组件的<code>keep-alive</code>，那自然<code>activated、deactivated</code>这两个生命周期<code>也没了</code></strong></p>
+<pre><code>&lt;template&gt;
+  &lt;div id=&quot;app&quot;&gt;
+    &lt;!-- 公共头部组件 --&gt;
+    &lt;xxx-header&gt;&lt;/xxx-header&gt;
+    &lt;!-- 路由视图，相当于router-view --&gt;
+    &lt;nuxt/&gt;
+    &lt;!-- 公共底部组件 --&gt;
+    &lt;xxx-footer&gt;&lt;/xxx-footer&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+</code></pre><p><strong>6. 没有keep-alive</strong><br><strong>由于是服务端渲染，所以不支持组件的<code>keep-alive</code>，那自然<code>activated、deactivated</code>这两个生命周期<code>也没了</code></strong></p>
 <p><strong>7. 配置插件</strong><br><strong><code>所有插件</code>都写在<code>/plugins目录</code>下，这里以<code>vue-lazyload</code>为例</strong></p>
 <p><strong>plugins/lazy-load.js</strong></p>
 <pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">import</span> Vue <span class="token keyword">from</span> <span class="token string">'vue'</span>
@@ -137,19 +136,17 @@ module<span class="token punctuation">.</span>exports <span class="token operato
 <span class="token punctuation">}</span>
 </code></pre>
 <p><strong>组件中使用</strong></p>
-<pre class=" language-vue"><code class="language-vue"><script>
-export default {
-  fetch ({ app }) {
-    console.log(app.$axios)
-  },
-  asyncData ({ app }) {
-    console.log(app.$axios)
-  },
-  created () {
-    console.log(this.$axios)
-  }
-}
-</script>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  fetch <span class="token punctuation">(</span><span class="token punctuation">{</span> app <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>app<span class="token punctuation">.</span>$axios<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  asyncData <span class="token punctuation">(</span><span class="token punctuation">{</span> app <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>app<span class="token punctuation">.</span>$axios<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  created <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>$axios<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 </code></pre>
 <p><strong>不需要在plugins配置axios，但是如果要设置全局拦截器，那么就要新建一个/plugins/axios.js</strong></p>
 <pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">function</span> <span class="token punctuation">(</span>app<span class="token punctuation">)</span> <span class="token punctuation">{</span>
@@ -193,44 +190,40 @@ export default {
 <span class="token punctuation">}</span>
 </code></pre>
 <p><strong>10. 页面组件特有的Meta标签</strong></p>
-<pre class=" language-vue"><code class="language-vue"><script>
-export default {
-  head () {
-    return {
-      meta: 
-      [
-        {
-          name: 'keywords',
-          content: '最强王者,今晚吃鸡'
-        },
-      ]
-    }
-  }
-}
-</script>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  head <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      meta<span class="token punctuation">:</span> 
+      <span class="token punctuation">[</span>
+        <span class="token punctuation">{</span>
+          name<span class="token punctuation">:</span> <span class="token string">'keywords'</span><span class="token punctuation">,</span>
+          content<span class="token punctuation">:</span> <span class="token string">'最强王者,今晚吃鸡'</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">]</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 </code></pre>
 <p><strong>11. 动态路由的Meta标签填充</strong><br><strong>游戏详情页面举例子，由于数据是异步获取的，需要把数据获取写在asyncData钩子，待数据获取成功才会渲染该页面组件</strong></p>
-<pre class=" language-vue"><code class="language-vue"><script>
-export default {
-  async asyncData ({ app, params }) {
-    let data = await app.$axios.get(`/appinfo/${params.id}`);
-    return {
-      appname: data.appinfo.appname
-    }
-  },
-  head () {
-    return {
-      meta: 
-      [
-        {
-          name: 'keywords',
-          content: `${this.appname},无限宝石,无限元宝`
-        },
-      ]
-    }
-  }
-}
-</script>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  <span class="token keyword">async</span> asyncData <span class="token punctuation">(</span><span class="token punctuation">{</span> app<span class="token punctuation">,</span> params <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> data <span class="token operator">=</span> <span class="token keyword">await</span> app<span class="token punctuation">.</span>$axios<span class="token punctuation">.</span><span class="token keyword">get</span><span class="token punctuation">(</span><span class="token template-string"><span class="token string">`/appinfo/</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>params<span class="token punctuation">.</span>id<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      appname<span class="token punctuation">:</span> data<span class="token punctuation">.</span>appinfo<span class="token punctuation">.</span>appname
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  head <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      meta<span class="token punctuation">:</span> 
+      <span class="token punctuation">[</span>
+        <span class="token punctuation">{</span>
+          name<span class="token punctuation">:</span> <span class="token string">'keywords'</span><span class="token punctuation">,</span>
+          content<span class="token punctuation">:</span> <span class="token template-string"><span class="token string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token keyword">this</span><span class="token punctuation">.</span>appname<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">,无限宝石,无限元宝`</span></span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">]</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 </code></pre>
 <p><strong>12. 使用Vuex</strong><br><strong><code>nuxt</code>自己集成了<code>vuex</code>，所以<code>不需要安装</code>，<code>在/store目录下新建index.js</code>即可使用</strong></p>
 <pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">import</span> Vuex <span class="token keyword">from</span> <span class="token string">'vuex'</span>
@@ -251,14 +244,12 @@ export default {
 <p><strong>13. 登录状态？</strong><br><strong>vue-cli项目中，可以用<code>vuex-persistedstate</code>，它可以使vuex的状态持久化，页面刷新都<code>不会丢失</code>，原理当然是localStorage啦！问题来了，<code>nuxt</code>项目怎么保存登录状态呢？当然上面这两种方法我们都可以使用，但是有个问题，由于在<code>created</code>钩子中不存在<code>window</code>对象(获取<code>cookie、localStorage</code>都需要<code>window</code>对象)，当需要判断是否存在<code>token</code>的时候，必须要在<code>mounted</code>进行操作，这说明页面进来的<code>一瞬间</code>你无法得知<code>是否已经登录了</code>，这会<code>导致</code>显示用户名、组件显示于隐藏都<code>慢半拍</code></strong></p>
 <p><strong><code>nuxt</code>非常友好，它提供了<code>fetch钩子</code>，还有<code>nuxtServerInit</code>，这两个钩子都运行在服务端并且我们能很<code>快速</code>地操作<code>store</code></strong></p>
 <p><strong>14. fetch的使用</strong><br><strong>如果页面组件设置了fetch方法，它会在组件每次加载前被调用（在服务端或切换至目标路由之前），此方法需要跟服务端的人员配合</strong></p>
-<pre class=" language-vue"><code class="language-vue"><script>
-export default {
-  async fetch ({ app, store, params }) {
-    let { data } = app.$axios.get('/token');
-    store.commit('setToken', data.token);
-  }
-}
-</script>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  <span class="token keyword">async</span> fetch <span class="token punctuation">(</span><span class="token punctuation">{</span> app<span class="token punctuation">,</span> store<span class="token punctuation">,</span> params <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> <span class="token punctuation">{</span> data <span class="token punctuation">}</span> <span class="token operator">=</span> app<span class="token punctuation">.</span>$axios<span class="token punctuation">.</span><span class="token keyword">get</span><span class="token punctuation">(</span><span class="token string">'/token'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    store<span class="token punctuation">.</span><span class="token function">commit</span><span class="token punctuation">(</span><span class="token string">'setToken'</span><span class="token punctuation">,</span> data<span class="token punctuation">.</span>token<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 </code></pre>
 <p><strong>15. nuxtServerInit</strong><br><strong>终极无敌方法</strong></p>
 <pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">import</span> Vuex <span class="token keyword">from</span> <span class="token string">'vuex'</span>
@@ -303,13 +294,11 @@ export default {
 Vue<span class="token punctuation">.</span>prototype<span class="token punctuation">.</span>$utils<span class="token operator">=</span> utils
 </code></pre>
 <p><strong>组件调用</strong></p>
-<pre class=" language-vue"><code class="language-vue"><script>
-export default {
-  created() {
-    this.$zexin.message('小老弟，你怎么回事')
-  }
-}
-</script>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  <span class="token function">created</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>$zexin<span class="token punctuation">.</span><span class="token function">message</span><span class="token punctuation">(</span><span class="token string">'小老弟，你怎么回事'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 </code></pre>
 <p><strong>需要在plugins中配置</strong></p>
 <p><strong>17. 全局样式</strong><br><strong>nuxt.config.js</strong></p>
@@ -478,9 +467,126 @@ console<span class="token punctuation">.</span><span class="token function">log<
         
         <tags>
             
+            <tag> Event Loop </tag>
+            
             <tag> promise </tag>
             
-            <tag> Event Loop </tag>
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Node.js遍历文件目录]]></title>
+      <url>http://www.imaxin.cn/2018/09/14/sth/Node.js%E9%81%8D%E5%8E%86%E6%96%87%E4%BB%B6%E7%9B%AE%E5%BD%95/</url>
+      <content type="html"><![CDATA[<p>公司有个项目使用的是webpack构建的vue多页面应用，根目录src文件夹下有2016，2017，2018这几年的前端项目，各个项目构建完成后都会在根目录的dist文件夹下，文件夹名对应src里的各个项目名。为了方便自己快速预览并找到对应项目的路径，把dist目录下的文件树结构遍历，过滤得到<code>html</code>文件的路径，并读取内容里面的<code>title</code>，生成一个<code>json</code>文件，最终整理到一个页面表格内切换预览。</p>
+<h2 id="dirname"><a href="#dirname" class="headerlink" title="__dirname"></a>__dirname</h2><p>获取当前文件的绝对路径</p>
+<h2 id="path模块"><a href="#path模块" class="headerlink" title="path模块"></a>path模块</h2><h3 id="path-resolve"><a href="#path-resolve" class="headerlink" title="path.resolve"></a>path.resolve</h3><ul>
+<li>把一个路径或路径片段的序列解析为一个绝对路径</li>
+<li>参数从右往左解析</li>
+</ul>
+<h2 id="fs模块"><a href="#fs模块" class="headerlink" title="fs模块"></a>fs模块</h2><h3 id="fs-readdir"><a href="#fs-readdir" class="headerlink" title="fs.readdir"></a>fs.readdir</h3><ul>
+<li>查看所传目录下的 文件/文件夹 等</li>
+<li>callback第二个参数是目录下的文件数组列表，每项都是<code>string</code>(文件名)</li>
+</ul>
+<h3 id="fs-stat"><a href="#fs-stat" class="headerlink" title="fs.stat"></a>fs.stat</h3><ul>
+<li>接受一个文件路径参数</li>
+<li>callback第二个参数返回一个<code>fs.Stats</code>类的实例</li>
+<li>实例原型上有个方法<code>stats.isDirectory()</code> 判断当前文件路径是否是文件夹</li>
+</ul>
+<h3 id="fs-writeFile"><a href="#fs-writeFile" class="headerlink" title="fs.writeFile"></a>fs.writeFile</h3><ul>
+<li>fs.writeFile(path, str, callback)</li>
+<li>默认以<code>w</code>的flags来写文件（没有就创建，清空并写入）</li>
+<li>默认<code>UTF-8</code>的编码方式</li>
+</ul>
+<h3 id="fs-readFile"><a href="#fs-readFile" class="headerlink" title="fs.readFile"></a>fs.readFile</h3><ul>
+<li>fs.readFile(file, opts, callback)</li>
+<li>读取一个文件，如果不指定<code>opts</code>，比如<code>utf-8</code>，则返回一个buffer</li>
+<li>可以使用<code>toString</code>得到文件内容</li>
+</ul>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><ul>
+<li>从根目录开始得到文件</li>
+<li>如果是文件夹就继续到该目录下继续遍历</li>
+<li>是html文件的话读取<code>&lt;title&gt;&lt;/title&gt;</code>中间的标题</li>
+<li>按对应的结构生成<code>tree.json</code>文件</li>
+</ul>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">let</span> fs <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'fs'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">let</span> path <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'path'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> jsonObj <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token keyword">let</span> whiteList <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'.git'</span><span class="token punctuation">,</span> <span class="token string">'.idea'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">// node_modules etc..</span>
+<span class="token keyword">let</span> root <span class="token operator">=</span> path<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">'..'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">function</span> <span class="token function">readdirR</span><span class="token punctuation">(</span>dir<span class="token punctuation">,</span> obj<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  fs<span class="token punctuation">.</span><span class="token function">readdir</span><span class="token punctuation">(</span>dir<span class="token punctuation">,</span> <span class="token punctuation">(</span>err<span class="token punctuation">,</span> files<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> console<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>files<span class="token punctuation">)</span> <span class="token keyword">return</span>
+    files<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span>file <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+      <span class="token keyword">let</span> filePath <span class="token operator">=</span> path<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span>dir<span class="token punctuation">,</span> file<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      fs<span class="token punctuation">.</span><span class="token function">stat</span><span class="token punctuation">(</span>filePath<span class="token punctuation">,</span> <span class="token punctuation">(</span>err<span class="token punctuation">,</span> stats<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          <span class="token keyword">return</span> console<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>stats<span class="token punctuation">.</span><span class="token function">isDirectory</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>whiteList<span class="token punctuation">.</span><span class="token function">includes</span><span class="token punctuation">(</span>file<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          obj<span class="token punctuation">[</span>file<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+          <span class="token function">writeJson</span><span class="token punctuation">(</span>JSON<span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>jsonObj<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+            <span class="token function">readdirR</span><span class="token punctuation">(</span>filePath<span class="token punctuation">,</span> obj<span class="token punctuation">[</span>file<span class="token punctuation">]</span><span class="token punctuation">)</span>
+          <span class="token punctuation">}</span><span class="token punctuation">)</span>
+        <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+          <span class="token keyword">if</span> <span class="token punctuation">(</span>file<span class="token punctuation">.</span><span class="token function">endsWith</span><span class="token punctuation">(</span><span class="token string">'.html'</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            fs<span class="token punctuation">.</span><span class="token function">readFile</span><span class="token punctuation">(</span>filePath<span class="token punctuation">,</span> <span class="token punctuation">(</span>err<span class="token punctuation">,</span> data<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+              <span class="token keyword">if</span> <span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token keyword">return</span> console<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+              <span class="token keyword">let</span> fileStr <span class="token operator">=</span> data<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+              <span class="token keyword">let</span> reg <span class="token operator">=</span> <span class="token regex">/&lt;title>(.+)&lt;\/title>/</span><span class="token punctuation">;</span>
+              <span class="token keyword">let</span> res <span class="token operator">=</span> Array<span class="token punctuation">.</span><span class="token function">isArray</span><span class="token punctuation">(</span>reg<span class="token punctuation">.</span><span class="token function">exec</span><span class="token punctuation">(</span>fileStr<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">?</span> reg<span class="token punctuation">.</span><span class="token function">exec</span><span class="token punctuation">(</span>fileStr<span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token punctuation">:</span> <span class="token string">''</span><span class="token punctuation">;</span>
+              <span class="token keyword">let</span> title <span class="token operator">=</span> reg<span class="token punctuation">.</span><span class="token function">exec</span><span class="token punctuation">(</span>fileStr<span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+              obj<span class="token punctuation">[</span>file<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">{</span>
+                title<span class="token punctuation">,</span>
+                directory<span class="token punctuation">:</span> filePath
+              <span class="token punctuation">}</span><span class="token punctuation">;</span>
+              <span class="token function">writeJson</span><span class="token punctuation">(</span>JSON<span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>jsonObj<span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token punctuation">}</span><span class="token punctuation">)</span>
+          <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+            obj<span class="token punctuation">[</span>file<span class="token punctuation">]</span> <span class="token operator">=</span> file<span class="token punctuation">;</span>
+            <span class="token function">writeJson</span><span class="token punctuation">(</span>JSON<span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>jsonObj<span class="token punctuation">)</span><span class="token punctuation">)</span>
+          <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">function</span> <span class="token function">writeJson</span><span class="token punctuation">(</span>str<span class="token punctuation">,</span> success<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  fs<span class="token punctuation">.</span><span class="token function">writeFile</span><span class="token punctuation">(</span><span class="token template-string"><span class="token string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>root<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">/tree.json`</span></span><span class="token punctuation">,</span> str<span class="token punctuation">,</span> <span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> console<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    success <span class="token operator">&amp;&amp;</span> <span class="token function">success</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+<span class="token function">readdirR</span><span class="token punctuation">(</span>root<span class="token punctuation">,</span> jsonObj<span class="token punctuation">)</span>
+</code></pre>
+<h2 id="预览"><a href="#预览" class="headerlink" title="预览"></a>预览</h2><ul>
+<li><code>Object.keys(json对象).forEach</code></li>
+<li>把线上地址前缀 拼接 <code>html</code>文件的路径得到URL</li>
+<li>选中预览的时候用iframe来加载对应地址</li>
+</ul>
+<h2 id="readdirp"><a href="#readdirp" class="headerlink" title="readdirp"></a>readdirp</h2><p>开源库 <a href="https://github.com/paulmillr/readdirp" target="_blank" rel="external">readdirp</a> 支持文件类型过滤，是<code>fs.readdir</code>的递归版，执行后得到一个<code>stream</code>对象</p>
+]]></content>
+      
+        <categories>
+            
+            <category> Javascript </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> node.js </tag>
             
         </tags>
         
@@ -810,128 +916,11 @@ console<span class="token punctuation">.</span><span class="token function">log<
         
         <tags>
             
-            <tag> 异步 </tag>
-            
             <tag> promise </tag>
             
+            <tag> 异步 </tag>
+            
             <tag> async </tag>
-            
-        </tags>
-        
-    </entry>
-    
-    <entry>
-      <title><![CDATA[Node.js遍历文件目录]]></title>
-      <url>http://www.imaxin.cn/2018/09/14/sth/Node.js%E9%81%8D%E5%8E%86%E6%96%87%E4%BB%B6%E7%9B%AE%E5%BD%95/</url>
-      <content type="html"><![CDATA[<p>公司有个项目使用的是webpack构建的vue多页面应用，根目录src文件夹下有2016，2017，2018这几年的前端项目，各个项目构建完成后都会在根目录的dist文件夹下，文件夹名对应src里的各个项目名。为了方便自己快速预览并找到对应项目的路径，把dist目录下的文件树结构遍历，过滤得到<code>html</code>文件的路径，并读取内容里面的<code>title</code>，生成一个<code>json</code>文件，最终整理到一个页面表格内切换预览。</p>
-<h2 id="dirname"><a href="#dirname" class="headerlink" title="__dirname"></a>__dirname</h2><p>获取当前文件的绝对路径</p>
-<h2 id="path模块"><a href="#path模块" class="headerlink" title="path模块"></a>path模块</h2><h3 id="path-resolve"><a href="#path-resolve" class="headerlink" title="path.resolve"></a>path.resolve</h3><ul>
-<li>把一个路径或路径片段的序列解析为一个绝对路径</li>
-<li>参数从右往左解析</li>
-</ul>
-<h2 id="fs模块"><a href="#fs模块" class="headerlink" title="fs模块"></a>fs模块</h2><h3 id="fs-readdir"><a href="#fs-readdir" class="headerlink" title="fs.readdir"></a>fs.readdir</h3><ul>
-<li>查看所传目录下的 文件/文件夹 等</li>
-<li>callback第二个参数是目录下的文件数组列表，每项都是<code>string</code>(文件名)</li>
-</ul>
-<h3 id="fs-stat"><a href="#fs-stat" class="headerlink" title="fs.stat"></a>fs.stat</h3><ul>
-<li>接受一个文件路径参数</li>
-<li>callback第二个参数返回一个<code>fs.Stats</code>类的实例</li>
-<li>实例原型上有个方法<code>stats.isDirectory()</code> 判断当前文件路径是否是文件夹</li>
-</ul>
-<h3 id="fs-writeFile"><a href="#fs-writeFile" class="headerlink" title="fs.writeFile"></a>fs.writeFile</h3><ul>
-<li>fs.writeFile(path, str, callback)</li>
-<li>默认以<code>w</code>的flags来写文件（没有就创建，清空并写入）</li>
-<li>默认<code>UTF-8</code>的编码方式</li>
-</ul>
-<h3 id="fs-readFile"><a href="#fs-readFile" class="headerlink" title="fs.readFile"></a>fs.readFile</h3><ul>
-<li>fs.readFile(file, opts, callback)</li>
-<li>读取一个文件，如果不指定<code>opts</code>，比如<code>utf-8</code>，则返回一个buffer</li>
-<li>可以使用<code>toString</code>得到文件内容</li>
-</ul>
-<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><ul>
-<li>从根目录开始得到文件</li>
-<li>如果是文件夹就继续到该目录下继续遍历</li>
-<li>是html文件的话读取<code>&lt;title&gt;&lt;/title&gt;</code>中间的标题</li>
-<li>按对应的结构生成<code>tree.json</code>文件</li>
-</ul>
-<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">let</span> fs <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'fs'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">let</span> path <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'path'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-<span class="token keyword">const</span> jsonObj <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
-<span class="token keyword">let</span> whiteList <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'.git'</span><span class="token punctuation">,</span> <span class="token string">'.idea'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">// node_modules etc..</span>
-<span class="token keyword">let</span> root <span class="token operator">=</span> path<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">'..'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-<span class="token keyword">function</span> <span class="token function">readdirR</span><span class="token punctuation">(</span>dir<span class="token punctuation">,</span> obj<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  fs<span class="token punctuation">.</span><span class="token function">readdir</span><span class="token punctuation">(</span>dir<span class="token punctuation">,</span> <span class="token punctuation">(</span>err<span class="token punctuation">,</span> files<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-      <span class="token keyword">return</span> console<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>files<span class="token punctuation">)</span> <span class="token keyword">return</span>
-    files<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span>file <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
-      <span class="token keyword">let</span> filePath <span class="token operator">=</span> path<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span>dir<span class="token punctuation">,</span> file<span class="token punctuation">)</span><span class="token punctuation">;</span>
-      fs<span class="token punctuation">.</span><span class="token function">stat</span><span class="token punctuation">(</span>filePath<span class="token punctuation">,</span> <span class="token punctuation">(</span>err<span class="token punctuation">,</span> stats<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-          <span class="token keyword">return</span> console<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-        <span class="token punctuation">}</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span>stats<span class="token punctuation">.</span><span class="token function">isDirectory</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>whiteList<span class="token punctuation">.</span><span class="token function">includes</span><span class="token punctuation">(</span>file<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-          obj<span class="token punctuation">[</span>file<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
-          <span class="token function">writeJson</span><span class="token punctuation">(</span>JSON<span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>jsonObj<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
-            <span class="token function">readdirR</span><span class="token punctuation">(</span>filePath<span class="token punctuation">,</span> obj<span class="token punctuation">[</span>file<span class="token punctuation">]</span><span class="token punctuation">)</span>
-          <span class="token punctuation">}</span><span class="token punctuation">)</span>
-        <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
-          <span class="token keyword">if</span> <span class="token punctuation">(</span>file<span class="token punctuation">.</span><span class="token function">endsWith</span><span class="token punctuation">(</span><span class="token string">'.html'</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-            fs<span class="token punctuation">.</span><span class="token function">readFile</span><span class="token punctuation">(</span>filePath<span class="token punctuation">,</span> <span class="token punctuation">(</span>err<span class="token punctuation">,</span> data<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
-              <span class="token keyword">if</span> <span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token keyword">return</span> console<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-              <span class="token keyword">let</span> fileStr <span class="token operator">=</span> data<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-              <span class="token keyword">let</span> reg <span class="token operator">=</span> <span class="token regex">/&lt;title>(.+)&lt;\/title>/</span><span class="token punctuation">;</span>
-              <span class="token keyword">let</span> res <span class="token operator">=</span> Array<span class="token punctuation">.</span><span class="token function">isArray</span><span class="token punctuation">(</span>reg<span class="token punctuation">.</span><span class="token function">exec</span><span class="token punctuation">(</span>fileStr<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">?</span> reg<span class="token punctuation">.</span><span class="token function">exec</span><span class="token punctuation">(</span>fileStr<span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token punctuation">:</span> <span class="token string">''</span><span class="token punctuation">;</span>
-              <span class="token keyword">let</span> title <span class="token operator">=</span> reg<span class="token punctuation">.</span><span class="token function">exec</span><span class="token punctuation">(</span>fileStr<span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-              obj<span class="token punctuation">[</span>file<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">{</span>
-                title<span class="token punctuation">,</span>
-                directory<span class="token punctuation">:</span> filePath
-              <span class="token punctuation">}</span><span class="token punctuation">;</span>
-              <span class="token function">writeJson</span><span class="token punctuation">(</span>JSON<span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>jsonObj<span class="token punctuation">)</span><span class="token punctuation">)</span>
-            <span class="token punctuation">}</span><span class="token punctuation">)</span>
-          <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
-            obj<span class="token punctuation">[</span>file<span class="token punctuation">]</span> <span class="token operator">=</span> file<span class="token punctuation">;</span>
-            <span class="token function">writeJson</span><span class="token punctuation">(</span>JSON<span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>jsonObj<span class="token punctuation">)</span><span class="token punctuation">)</span>
-          <span class="token punctuation">}</span>
-        <span class="token punctuation">}</span>
-      <span class="token punctuation">}</span><span class="token punctuation">)</span>
-    <span class="token punctuation">}</span><span class="token punctuation">)</span>
-  <span class="token punctuation">}</span><span class="token punctuation">)</span>
-<span class="token punctuation">}</span>
-
-<span class="token keyword">function</span> <span class="token function">writeJson</span><span class="token punctuation">(</span>str<span class="token punctuation">,</span> success<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  fs<span class="token punctuation">.</span><span class="token function">writeFile</span><span class="token punctuation">(</span><span class="token template-string"><span class="token string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>root<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">/tree.json`</span></span><span class="token punctuation">,</span> str<span class="token punctuation">,</span> <span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-      <span class="token keyword">return</span> console<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-    success <span class="token operator">&amp;&amp;</span> <span class="token function">success</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-  <span class="token punctuation">}</span><span class="token punctuation">)</span>
-<span class="token punctuation">}</span>
-
-<span class="token function">readdirR</span><span class="token punctuation">(</span>root<span class="token punctuation">,</span> jsonObj<span class="token punctuation">)</span>
-</code></pre>
-<h2 id="预览"><a href="#预览" class="headerlink" title="预览"></a>预览</h2><ul>
-<li><code>Object.keys(json对象).forEach</code></li>
-<li>把线上地址前缀 拼接 <code>html</code>文件的路径得到URL</li>
-<li>选中预览的时候用iframe来加载对应地址</li>
-</ul>
-<h2 id="readdirp"><a href="#readdirp" class="headerlink" title="readdirp"></a>readdirp</h2><p>开源库 <a href="https://github.com/paulmillr/readdirp" target="_blank" rel="external">readdirp</a> 支持文件类型过滤，是<code>fs.readdir</code>的递归版，执行后得到一个<code>stream</code>对象</p>
-]]></content>
-      
-        <categories>
-            
-            <category> Javascript </category>
-            
-        </categories>
-        
-        
-        <tags>
-            
-            <tag> node.js </tag>
             
         </tags>
         
@@ -2815,6 +2804,41 @@ div1<span class="token punctuation">.</span>onclick <span class="token operator"
     </entry>
     
     <entry>
+      <title><![CDATA[JS中的事件机制]]></title>
+      <url>http://www.imaxin.cn/2016/02/06/base/JS%E4%BA%8B%E4%BB%B6/</url>
+      <content type="html"><![CDATA[<h3 id="鼠标事件对象："><a href="#鼠标事件对象：" class="headerlink" title="鼠标事件对象："></a>鼠标事件对象：</h3><h4 id="产生："><a href="#产生：" class="headerlink" title="产生："></a>产生：</h4><p>标准浏览器中事件对象e存在于绑定的函数中，在ie8-中这个事件对象在window.event属性上。<br>e = e || window.event</p>
+<p>clientX：鼠标点击位置相对于窗口的X轴坐标<br>clientY： 鼠标点击位置相对于窗口的Y轴坐标</p>
+<h4 id="事件兼容"><a href="#事件兼容" class="headerlink" title="事件兼容"></a>事件兼容</h4><p>事件对象：</p>
+<pre class=" language-javascript"><code class="language-javascript">e <span class="token operator">=</span> e <span class="token operator">||</span> window<span class="token punctuation">.</span>event
+</code></pre>
+<p>事件源：</p>
+<pre class=" language-javascript"><code class="language-javascript">e<span class="token punctuation">.</span>target <span class="token operator">=</span> e<span class="token punctuation">.</span>target <span class="token operator">||</span> e<span class="token punctuation">.</span>srcElement<span class="token punctuation">;</span>
+</code></pre>
+<p>e.pageX: 鼠标位置相对于页面的X轴坐标<br>e.pageY: 鼠标位置相对于页面的Y轴坐标</p>
+<pre class=" language-javascript"><code class="language-javascript">e<span class="token punctuation">.</span>pageX <span class="token operator">=</span> e<span class="token punctuation">.</span>pageX <span class="token operator">||</span> e<span class="token punctuation">.</span>clientX <span class="token operator">+</span> <span class="token punctuation">(</span>document<span class="token punctuation">.</span>documentElement<span class="token punctuation">.</span>scrollLeft <span class="token operator">||</span> document<span class="token punctuation">.</span>body<span class="token punctuation">.</span>scrollLeft<span class="token punctuation">)</span><span class="token punctuation">;</span>
+e<span class="token punctuation">.</span>pageY <span class="token operator">=</span> e<span class="token punctuation">.</span>pageY <span class="token operator">||</span> e<span class="token punctuation">.</span>clientY <span class="token operator">+</span> <span class="token punctuation">(</span>document<span class="token punctuation">.</span>documentElement<span class="token punctuation">.</span>scrollTop <span class="token operator">||</span> document<span class="token punctuation">.</span>body<span class="token punctuation">.</span>scrollTop<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>阻止默认行为:</p>
+<pre class=" language-javascript"><code class="language-javascript">e<span class="token punctuation">.</span>preventDefault <span class="token operator">?</span> e<span class="token punctuation">.</span><span class="token function">preventDefault</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">:</span> returnValue <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+</code></pre>
+]]></content>
+      
+        <categories>
+            
+            <category> Javascript </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> 事件 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[作用域不释放]]></title>
       <url>http://www.imaxin.cn/2016/02/06/base/%E6%A0%88%E5%86%85%E5%AD%98%E4%B8%8D%E9%87%8A%E6%94%BE/</url>
       <content type="html"><![CDATA[<p>关于作用域不释放的小练习：</p>
@@ -2974,41 +2998,6 @@ obj<span class="token punctuation">.</span><span class="token function">fn</span
         <tags>
             
             <tag> 作用域 </tag>
-            
-        </tags>
-        
-    </entry>
-    
-    <entry>
-      <title><![CDATA[JS中的事件机制]]></title>
-      <url>http://www.imaxin.cn/2016/02/06/base/JS%E4%BA%8B%E4%BB%B6/</url>
-      <content type="html"><![CDATA[<h3 id="鼠标事件对象："><a href="#鼠标事件对象：" class="headerlink" title="鼠标事件对象："></a>鼠标事件对象：</h3><h4 id="产生："><a href="#产生：" class="headerlink" title="产生："></a>产生：</h4><p>标准浏览器中事件对象e存在于绑定的函数中，在ie8-中这个事件对象在window.event属性上。<br>e = e || window.event</p>
-<p>clientX：鼠标点击位置相对于窗口的X轴坐标<br>clientY： 鼠标点击位置相对于窗口的Y轴坐标</p>
-<h4 id="事件兼容"><a href="#事件兼容" class="headerlink" title="事件兼容"></a>事件兼容</h4><p>事件对象：</p>
-<pre class=" language-javascript"><code class="language-javascript">e <span class="token operator">=</span> e <span class="token operator">||</span> window<span class="token punctuation">.</span>event
-</code></pre>
-<p>事件源：</p>
-<pre class=" language-javascript"><code class="language-javascript">e<span class="token punctuation">.</span>target <span class="token operator">=</span> e<span class="token punctuation">.</span>target <span class="token operator">||</span> e<span class="token punctuation">.</span>srcElement<span class="token punctuation">;</span>
-</code></pre>
-<p>e.pageX: 鼠标位置相对于页面的X轴坐标<br>e.pageY: 鼠标位置相对于页面的Y轴坐标</p>
-<pre class=" language-javascript"><code class="language-javascript">e<span class="token punctuation">.</span>pageX <span class="token operator">=</span> e<span class="token punctuation">.</span>pageX <span class="token operator">||</span> e<span class="token punctuation">.</span>clientX <span class="token operator">+</span> <span class="token punctuation">(</span>document<span class="token punctuation">.</span>documentElement<span class="token punctuation">.</span>scrollLeft <span class="token operator">||</span> document<span class="token punctuation">.</span>body<span class="token punctuation">.</span>scrollLeft<span class="token punctuation">)</span><span class="token punctuation">;</span>
-e<span class="token punctuation">.</span>pageY <span class="token operator">=</span> e<span class="token punctuation">.</span>pageY <span class="token operator">||</span> e<span class="token punctuation">.</span>clientY <span class="token operator">+</span> <span class="token punctuation">(</span>document<span class="token punctuation">.</span>documentElement<span class="token punctuation">.</span>scrollTop <span class="token operator">||</span> document<span class="token punctuation">.</span>body<span class="token punctuation">.</span>scrollTop<span class="token punctuation">)</span><span class="token punctuation">;</span>
-</code></pre>
-<p>阻止默认行为:</p>
-<pre class=" language-javascript"><code class="language-javascript">e<span class="token punctuation">.</span>preventDefault <span class="token operator">?</span> e<span class="token punctuation">.</span><span class="token function">preventDefault</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">:</span> returnValue <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
-</code></pre>
-]]></content>
-      
-        <categories>
-            
-            <category> Javascript </category>
-            
-        </categories>
-        
-        
-        <tags>
-            
-            <tag> 事件 </tag>
             
         </tags>
         
@@ -3776,58 +3765,6 @@ console<span class="token punctuation">.</span><span class="token function">log<
     </entry>
     
     <entry>
-      <title><![CDATA[递归应用]]></title>
-      <url>http://www.imaxin.cn/2015/05/29/base/digui/</url>
-      <content type="html"><![CDATA[<p>快速排序就是递归思想实现的。</p>
-<h3 id="1到n之间不能被2整除的数的积"><a href="#1到n之间不能被2整除的数的积" class="headerlink" title="1到n之间不能被2整除的数的积"></a>1到n之间不能被2整除的数的积</h3><pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">caculate</span><span class="token punctuation">(</span>n<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>n <span class="token operator">===</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>n <span class="token operator">%</span> <span class="token number">2</span> <span class="token operator">===</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token function">caculate</span><span class="token punctuation">(</span>n <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">return</span> n <span class="token operator">*</span> <span class="token function">caculate</span><span class="token punctuation">(</span>n <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span>
-<span class="token punctuation">}</span>
-
-<span class="token keyword">var</span> total <span class="token operator">=</span> <span class="token function">caculate</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>total<span class="token punctuation">)</span>
-</code></pre>
-<h3 id="1-100-之间不能被3整除的数之和"><a href="#1-100-之间不能被3整除的数之和" class="headerlink" title="1 - 100 之间不能被3整除的数之和"></a>1 - 100 之间不能被3整除的数之和</h3><pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">excute</span><span class="token punctuation">(</span>n<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>n <span class="token operator">===</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>n <span class="token operator">%</span> <span class="token number">3</span> <span class="token operator">===</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token function">excute</span><span class="token punctuation">(</span>n <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">return</span> n <span class="token operator">+</span> <span class="token function">excute</span><span class="token punctuation">(</span>n <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span>
-<span class="token punctuation">}</span>
-<span class="token keyword">var</span> total <span class="token operator">=</span> <span class="token function">excute</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>total<span class="token punctuation">)</span>
-</code></pre>
-<h3 id="通过setTimeout实现setInterval功能"><a href="#通过setTimeout实现setInterval功能" class="headerlink" title="通过setTimeout实现setInterval功能"></a>通过setTimeout实现setInterval功能</h3><p>利用递归调用自身，比setInterval更易控制</p>
-<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">var</span> timer <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
-<span class="token keyword">var</span> count <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
-<span class="token keyword">function</span> <span class="token function">events</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    window<span class="token punctuation">.</span><span class="token function">clearTimeout</span><span class="token punctuation">(</span>timer<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 清除上一次定时器</span>
-    count<span class="token operator">++</span><span class="token punctuation">;</span>
-    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>count<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>count <span class="token operator">===</span> <span class="token number">3</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment" spellcheck="true">// 控制递归结束</span>
-        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'结束'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">return</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    timer <span class="token operator">=</span> <span class="token function">setTimeout</span><span class="token punctuation">(</span>events<span class="token punctuation">,</span> <span class="token number">1000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
-</code></pre>
-]]></content>
-      
-        <categories>
-            
-            <category> Javascript </category>
-            
-        </categories>
-        
-        
-        <tags>
-            
-            <tag> 递归 </tag>
-            
-        </tags>
-        
-    </entry>
-    
-    <entry>
       <title><![CDATA[数组的常用方法]]></title>
       <url>http://www.imaxin.cn/2015/05/29/base/array/</url>
       <content type="html"><![CDATA[<p>数组是值的有序集合，数组中每一项的值没有类型限制.</p>
@@ -3963,6 +3900,58 @@ arr<span class="token punctuation">.</span><span class="token function">myForEac
         <tags>
             
             <tag> Array </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[递归应用]]></title>
+      <url>http://www.imaxin.cn/2015/05/29/base/digui/</url>
+      <content type="html"><![CDATA[<p>快速排序就是递归思想实现的。</p>
+<h3 id="1到n之间不能被2整除的数的积"><a href="#1到n之间不能被2整除的数的积" class="headerlink" title="1到n之间不能被2整除的数的积"></a>1到n之间不能被2整除的数的积</h3><pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">caculate</span><span class="token punctuation">(</span>n<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>n <span class="token operator">===</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>n <span class="token operator">%</span> <span class="token number">2</span> <span class="token operator">===</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token function">caculate</span><span class="token punctuation">(</span>n <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> n <span class="token operator">*</span> <span class="token function">caculate</span><span class="token punctuation">(</span>n <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">var</span> total <span class="token operator">=</span> <span class="token function">caculate</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>total<span class="token punctuation">)</span>
+</code></pre>
+<h3 id="1-100-之间不能被3整除的数之和"><a href="#1-100-之间不能被3整除的数之和" class="headerlink" title="1 - 100 之间不能被3整除的数之和"></a>1 - 100 之间不能被3整除的数之和</h3><pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">excute</span><span class="token punctuation">(</span>n<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>n <span class="token operator">===</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>n <span class="token operator">%</span> <span class="token number">3</span> <span class="token operator">===</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token function">excute</span><span class="token punctuation">(</span>n <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> n <span class="token operator">+</span> <span class="token function">excute</span><span class="token punctuation">(</span>n <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">var</span> total <span class="token operator">=</span> <span class="token function">excute</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>total<span class="token punctuation">)</span>
+</code></pre>
+<h3 id="通过setTimeout实现setInterval功能"><a href="#通过setTimeout实现setInterval功能" class="headerlink" title="通过setTimeout实现setInterval功能"></a>通过setTimeout实现setInterval功能</h3><p>利用递归调用自身，比setInterval更易控制</p>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">var</span> timer <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> count <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+<span class="token keyword">function</span> <span class="token function">events</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    window<span class="token punctuation">.</span><span class="token function">clearTimeout</span><span class="token punctuation">(</span>timer<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 清除上一次定时器</span>
+    count<span class="token operator">++</span><span class="token punctuation">;</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>count<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>count <span class="token operator">===</span> <span class="token number">3</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment" spellcheck="true">// 控制递归结束</span>
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'结束'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    timer <span class="token operator">=</span> <span class="token function">setTimeout</span><span class="token punctuation">(</span>events<span class="token punctuation">,</span> <span class="token number">1000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+]]></content>
+      
+        <categories>
+            
+            <category> Javascript </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> 递归 </tag>
             
         </tags>
         

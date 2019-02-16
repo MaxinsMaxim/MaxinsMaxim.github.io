@@ -89,7 +89,7 @@
 <meta property="og:description" content="SSR场景目前页面中的数据都是异步请求得来的, 截止目前各大搜索引擎可以很好的对同步JS代码进行抓取并索引,所以同步是关键的。如果页面进去就是个loading在转, 这些抓取工具则不会等待请求回来后再抓取，也将无法在Google, Bing以及百度搜索到。
 大部分项目用的SPA多数是偏B端或者与原生组合式开发H5+安卓/iOS的app产品， 所以还不需要考虑SEO。
 如果是面向C端，那纯SPA无法">
-<meta property="og:updated_time" content="2019-02-16T11:24:03.774Z">
+<meta property="og:updated_time" content="2019-02-16T11:50:30.314Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Nuxt踩坑之旅">
 <meta name="twitter:description" content="SSR场景目前页面中的数据都是异步请求得来的, 截止目前各大搜索引擎可以很好的对同步JS代码进行抓取并索引,所以同步是关键的。如果页面进去就是个loading在转, 这些抓取工具则不会等待请求回来后再抓取，也将无法在Google, Bing以及百度搜索到。
@@ -401,18 +401,17 @@ export default {
 <span class="token punctuation">}</span>
 </code></pre>
 <p><strong>5. Header、Footer等公共组件放哪？</strong><br><strong>vue-cli入口文件是app.vue，在nuxt开发当中则是./layout/default.vue</strong></p>
-<pre class=" language-vue"><code class="language-vue"><template>
-  <div id="app">
-    <!-- 公共头部组件 -->
-    <xxx-header></xxx-header>
-    <!-- 路由视图，相当于router-view -->
-    <nuxt/>
-    <!-- 公共底部组件 -->
-    <xxx-footer></xxx-footer>
-  </div>
-</template>
-</code></pre>
-<p><strong>6. 没有keep-alive</strong><br><strong>由于是服务端渲染，所以不支持组件的<code>keep-alive</code>，那自然<code>activated、deactivated</code>这两个生命周期<code>也没了</code></strong></p>
+<pre><code>&lt;template&gt;
+  &lt;div id=&quot;app&quot;&gt;
+    &lt;!-- 公共头部组件 --&gt;
+    &lt;xxx-header&gt;&lt;/xxx-header&gt;
+    &lt;!-- 路由视图，相当于router-view --&gt;
+    &lt;nuxt/&gt;
+    &lt;!-- 公共底部组件 --&gt;
+    &lt;xxx-footer&gt;&lt;/xxx-footer&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+</code></pre><p><strong>6. 没有keep-alive</strong><br><strong>由于是服务端渲染，所以不支持组件的<code>keep-alive</code>，那自然<code>activated、deactivated</code>这两个生命周期<code>也没了</code></strong></p>
 <p><strong>7. 配置插件</strong><br><strong><code>所有插件</code>都写在<code>/plugins目录</code>下，这里以<code>vue-lazyload</code>为例</strong></p>
 <p><strong>plugins/lazy-load.js</strong></p>
 <pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">import</span> Vue <span class="token keyword">from</span> <span class="token string">'vue'</span>
@@ -457,19 +456,17 @@ module<span class="token punctuation">.</span>exports <span class="token operato
 <span class="token punctuation">}</span>
 </code></pre>
 <p><strong>组件中使用</strong></p>
-<pre class=" language-vue"><code class="language-vue"><script>
-export default {
-  fetch ({ app }) {
-    console.log(app.$axios)
-  },
-  asyncData ({ app }) {
-    console.log(app.$axios)
-  },
-  created () {
-    console.log(this.$axios)
-  }
-}
-</script>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  fetch <span class="token punctuation">(</span><span class="token punctuation">{</span> app <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>app<span class="token punctuation">.</span>$axios<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  asyncData <span class="token punctuation">(</span><span class="token punctuation">{</span> app <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>app<span class="token punctuation">.</span>$axios<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  created <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>$axios<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 </code></pre>
 <p><strong>不需要在plugins配置axios，但是如果要设置全局拦截器，那么就要新建一个/plugins/axios.js</strong></p>
 <pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">function</span> <span class="token punctuation">(</span>app<span class="token punctuation">)</span> <span class="token punctuation">{</span>
@@ -513,44 +510,40 @@ export default {
 <span class="token punctuation">}</span>
 </code></pre>
 <p><strong>10. 页面组件特有的Meta标签</strong></p>
-<pre class=" language-vue"><code class="language-vue"><script>
-export default {
-  head () {
-    return {
-      meta: 
-      [
-        {
-          name: 'keywords',
-          content: '最强王者,今晚吃鸡'
-        },
-      ]
-    }
-  }
-}
-</script>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  head <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      meta<span class="token punctuation">:</span> 
+      <span class="token punctuation">[</span>
+        <span class="token punctuation">{</span>
+          name<span class="token punctuation">:</span> <span class="token string">'keywords'</span><span class="token punctuation">,</span>
+          content<span class="token punctuation">:</span> <span class="token string">'最强王者,今晚吃鸡'</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">]</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 </code></pre>
 <p><strong>11. 动态路由的Meta标签填充</strong><br><strong>游戏详情页面举例子，由于数据是异步获取的，需要把数据获取写在asyncData钩子，待数据获取成功才会渲染该页面组件</strong></p>
-<pre class=" language-vue"><code class="language-vue"><script>
-export default {
-  async asyncData ({ app, params }) {
-    let data = await app.$axios.get(`/appinfo/${params.id}`);
-    return {
-      appname: data.appinfo.appname
-    }
-  },
-  head () {
-    return {
-      meta: 
-      [
-        {
-          name: 'keywords',
-          content: `${this.appname},无限宝石,无限元宝`
-        },
-      ]
-    }
-  }
-}
-</script>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  <span class="token keyword">async</span> asyncData <span class="token punctuation">(</span><span class="token punctuation">{</span> app<span class="token punctuation">,</span> params <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> data <span class="token operator">=</span> <span class="token keyword">await</span> app<span class="token punctuation">.</span>$axios<span class="token punctuation">.</span><span class="token keyword">get</span><span class="token punctuation">(</span><span class="token template-string"><span class="token string">`/appinfo/</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>params<span class="token punctuation">.</span>id<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      appname<span class="token punctuation">:</span> data<span class="token punctuation">.</span>appinfo<span class="token punctuation">.</span>appname
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  head <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      meta<span class="token punctuation">:</span> 
+      <span class="token punctuation">[</span>
+        <span class="token punctuation">{</span>
+          name<span class="token punctuation">:</span> <span class="token string">'keywords'</span><span class="token punctuation">,</span>
+          content<span class="token punctuation">:</span> <span class="token template-string"><span class="token string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token keyword">this</span><span class="token punctuation">.</span>appname<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">,无限宝石,无限元宝`</span></span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">]</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 </code></pre>
 <p><strong>12. 使用Vuex</strong><br><strong><code>nuxt</code>自己集成了<code>vuex</code>，所以<code>不需要安装</code>，<code>在/store目录下新建index.js</code>即可使用</strong></p>
 <pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">import</span> Vuex <span class="token keyword">from</span> <span class="token string">'vuex'</span>
@@ -571,14 +564,12 @@ export default {
 <p><strong>13. 登录状态？</strong><br><strong>vue-cli项目中，可以用<code>vuex-persistedstate</code>，它可以使vuex的状态持久化，页面刷新都<code>不会丢失</code>，原理当然是localStorage啦！问题来了，<code>nuxt</code>项目怎么保存登录状态呢？当然上面这两种方法我们都可以使用，但是有个问题，由于在<code>created</code>钩子中不存在<code>window</code>对象(获取<code>cookie、localStorage</code>都需要<code>window</code>对象)，当需要判断是否存在<code>token</code>的时候，必须要在<code>mounted</code>进行操作，这说明页面进来的<code>一瞬间</code>你无法得知<code>是否已经登录了</code>，这会<code>导致</code>显示用户名、组件显示于隐藏都<code>慢半拍</code></strong></p>
 <p><strong><code>nuxt</code>非常友好，它提供了<code>fetch钩子</code>，还有<code>nuxtServerInit</code>，这两个钩子都运行在服务端并且我们能很<code>快速</code>地操作<code>store</code></strong></p>
 <p><strong>14. fetch的使用</strong><br><strong>如果页面组件设置了fetch方法，它会在组件每次加载前被调用（在服务端或切换至目标路由之前），此方法需要跟服务端的人员配合</strong></p>
-<pre class=" language-vue"><code class="language-vue"><script>
-export default {
-  async fetch ({ app, store, params }) {
-    let { data } = app.$axios.get('/token');
-    store.commit('setToken', data.token);
-  }
-}
-</script>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  <span class="token keyword">async</span> fetch <span class="token punctuation">(</span><span class="token punctuation">{</span> app<span class="token punctuation">,</span> store<span class="token punctuation">,</span> params <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> <span class="token punctuation">{</span> data <span class="token punctuation">}</span> <span class="token operator">=</span> app<span class="token punctuation">.</span>$axios<span class="token punctuation">.</span><span class="token keyword">get</span><span class="token punctuation">(</span><span class="token string">'/token'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    store<span class="token punctuation">.</span><span class="token function">commit</span><span class="token punctuation">(</span><span class="token string">'setToken'</span><span class="token punctuation">,</span> data<span class="token punctuation">.</span>token<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 </code></pre>
 <p><strong>15. nuxtServerInit</strong><br><strong>终极无敌方法</strong></p>
 <pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">import</span> Vuex <span class="token keyword">from</span> <span class="token string">'vuex'</span>
@@ -623,13 +614,11 @@ export default {
 Vue<span class="token punctuation">.</span>prototype<span class="token punctuation">.</span>$utils<span class="token operator">=</span> utils
 </code></pre>
 <p><strong>组件调用</strong></p>
-<pre class=" language-vue"><code class="language-vue"><script>
-export default {
-  created() {
-    this.$zexin.message('小老弟，你怎么回事')
-  }
-}
-</script>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  <span class="token function">created</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>$zexin<span class="token punctuation">.</span><span class="token function">message</span><span class="token punctuation">(</span><span class="token string">'小老弟，你怎么回事'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 </code></pre>
 <p><strong>需要在plugins中配置</strong></p>
 <p><strong>17. 全局样式</strong><br><strong>nuxt.config.js</strong></p>
