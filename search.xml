@@ -4,9 +4,469 @@
   
     
     <entry>
+      <title><![CDATA[Nuxt踩坑之旅]]></title>
+      <url>http://www.imaxin.cn/2019/02/14/sth/Nuxt%E8%B8%A9%E5%9D%91%E4%B9%8B%E6%97%85/</url>
+      <content type="html"><![CDATA[<h2 id="SSR场景"><a href="#SSR场景" class="headerlink" title="SSR场景"></a>SSR场景</h2><p>目前页面中的数据都是异步请求得来的, 截止目前各大搜索引擎可以很好的对同步JS代码进行抓取并索引,所以同步是关键的。如果页面进去就是个loading在转, 这些抓取工具则不会等待请求回来后再抓取，也将无法在Google, Bing以及百度搜索到。</p>
+<p>大部分项目用的SPA多数是偏B端或者与原生组合式开发H5+安卓/iOS的app产品， 所以还不需要考虑SEO。</p>
+<p>如果是面向C端，那纯SPA无法满足SEO。</p>
+<h2 id="Nuxt-js的优点"><a href="#Nuxt-js的优点" class="headerlink" title="Nuxt.js的优点"></a>Nuxt.js的优点</h2><p>第一，更好的SEO。<br>简单来说就是可以将pages目录下的每个<code>页面组件</code>预先加载好并生各自成独立的HTML页面文件，采用服务端渲染，让SPA应用(Vue)也可以拥有SEO。</p>
+<p>第二，更快的内容到达时间。<br>换句话说也叫作”更快的完全可交互时间”，什么意思？其实内容到达未必能及时交互, 只是将内容展示出来了用户能看到了，也就是说要等JS,CSS,HTML完全加载完之后才能进行所谓的可交互。<br>这也是SSR想解决并且能解决的问题。<br>SSR的服务很有可能与api后台的服务在同一个机房甚至是同一台机器上跑, 甚至不需要使用HTTP发送请求, 直接用RPC来通信就可以, 这样在server端去获取数据就要比从客户端获取数据要快很多</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><pre><code>$ npx create-nuxt-app &lt;项目名&gt;
+$ npm run dev
+</code></pre><h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p><strong>1. asyncData、fetch周期都不存在Window对象</strong></p>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  <span class="token function">asyncData</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>window<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 服务端报错</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token function">fetch</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>window<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 服务端报错</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  created <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>window<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// undefined</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  mounted <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>window<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// Window {postMessage: ƒ, blur: ƒ, focus: ƒ, close: ƒ, frames: Window, …}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><strong>2. 配置错误页面</strong><br><strong>可以通过编辑 layouts/error.vue 文件来定制化错误页面.</strong></p>
+<pre class=" language-vue"><code class="language-vue"><template>
+  <div class="container">
+    <h1 v-if="error.statusCode === 404">页面不存在</h1>
+    <h1 v-else>应用发生错误异常</h1>
+    <nuxt-link to="/">首 页</nuxt-link>
+  </div>
+</template>
+
+<script>
+export default {
+  props: ['error'],
+  layout: 'blog' // 你可以为错误页面指定自定义的布局
+}
+</script>
+</code></pre>
+<p><strong>3. 自定义Loading页面</strong><br><strong>nuxt.config.js</strong></p>
+<pre class=" language-javascript"><code class="language-javascript">module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  loading<span class="token punctuation">:</span> <span class="token string">'~components/loading.vue'</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><strong>loading.vue</strong></p>
+<pre class=" language-vue"><code class="language-vue"><template lang="html">
+  <div class="loading-page" v-if="loading">
+    <p>Loading...</p>
+  </div>
+</template>
+
+<script>
+export default {
+  data: () => ({
+    loading: false
+  }),
+  methods: {
+    start () {
+      this.loading = true
+    },
+    finish () {
+      this.loading = false
+    }
+  }
+}
+</script>
+</code></pre>
+<p><strong>4. 校验参数</strong><br><strong>如果校验失败，则自动跳转到错误页面</strong></p>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  <span class="token function">validate</span><span class="token punctuation">(</span><span class="token punctuation">{</span> params<span class="token punctuation">,</span> query <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token regex">/^d+$/</span><span class="token punctuation">.</span><span class="token function">test</span><span class="token punctuation">(</span>params<span class="token punctuation">.</span>id<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// must be number</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><strong>5. Header、Footer等公共组件放哪？</strong><br><strong>vue-cli入口文件是app.vue，在nuxt开发当中则是./layout/default.vue</strong></p>
+<pre class=" language-vue"><code class="language-vue"><template>
+  <div id="app">
+    <!-- 公共头部组件 -->
+    <xxx-header></xxx-header>
+    <!-- 路由视图，相当于router-view -->
+    <nuxt/>
+    <!-- 公共底部组件 -->
+    <xxx-footer></xxx-footer>
+  </div>
+</template>
+</code></pre>
+<p><strong>6. 没有keep-alive</strong><br><strong>由于是服务端渲染，所以不支持组件的<code>keep-alive</code>，那自然<code>activated、deactivated</code>这两个生命周期<code>也没了</code></strong></p>
+<p><strong>7. 配置插件</strong><br><strong><code>所有插件</code>都写在<code>/plugins目录</code>下，这里以<code>vue-lazyload</code>为例</strong></p>
+<p><strong>plugins/lazy-load.js</strong></p>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">import</span> Vue <span class="token keyword">from</span> <span class="token string">'vue'</span>
+<span class="token keyword">import</span> VueLazyLoad <span class="token keyword">from</span> <span class="token string">'vue-lazyload'</span>
+
+Vue<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>VueLazyLoad<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+  loading<span class="token punctuation">:</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'~/assets/images/loading.jpg'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  error<span class="token punctuation">:</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'~/assets/images/error.jpg'</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre>
+<p><strong>nuxt.config.js</strong></p>
+<pre class=" language-javascript"><code class="language-javascript">module<span class="token punctuation">.</span>expors <span class="token operator">=</span> <span class="token punctuation">{</span>
+  plugins<span class="token punctuation">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      src<span class="token punctuation">:</span> <span class="token string">"~/plugins/lazy-load"</span><span class="token punctuation">,</span>
+      ssr<span class="token punctuation">:</span> <span class="token boolean">false</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><strong>8. 使用Axios，并配置全局拦截器，处理跨域</strong><br><strong><code>starter-template</code>模板，推荐使用<code>@nuxtjs/axios、@nuxtjs/proxy</code>，不需要在plugins配置</strong></p>
+<p><strong>安装依赖</strong></p>
+<pre><code>$ npm install @nuxtjs/axios @nuxtjs/proxy --save
+</code></pre><p><strong>使用、处理跨域</strong></p>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token comment" spellcheck="true">// nuxt.config.js</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  modules<span class="token punctuation">:</span> <span class="token punctuation">[</span> <span class="token string">'@nuxtjs/axios'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// 不需要加入@nuxtjs/proxy</span>
+  axios<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    proxy<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    prefix<span class="token punctuation">:</span> <span class="token string">'/api'</span><span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// baseURL</span>
+    credentials<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  proxy<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    <span class="token string">'/api/'</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+      target<span class="token punctuation">:</span> <span class="token string">'http://127.0.0.1:2001'</span><span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// 代理地址</span>
+      changeOrigin<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+      pathRewrite<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+        <span class="token string">'^/api'</span><span class="token punctuation">:</span> <span class="token string">''</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><strong>组件中使用</strong></p>
+<pre class=" language-vue"><code class="language-vue"><script>
+export default {
+  fetch ({ app }) {
+    console.log(app.$axios)
+  },
+  asyncData ({ app }) {
+    console.log(app.$axios)
+  },
+  created () {
+    console.log(this.$axios)
+  }
+}
+</script>
+</code></pre>
+<p><strong>不需要在plugins配置axios，但是如果要设置全局拦截器，那么就要新建一个/plugins/axios.js</strong></p>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">function</span> <span class="token punctuation">(</span>app<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">let</span> axios <span class="token operator">=</span> app<span class="token punctuation">.</span>$axios<span class="token punctuation">;</span> 
+ <span class="token comment" spellcheck="true">// 基本配置</span>
+  axios<span class="token punctuation">.</span>defaults<span class="token punctuation">.</span>timeout <span class="token operator">=</span> <span class="token number">10000</span>
+  axios<span class="token punctuation">.</span>defaults<span class="token punctuation">.</span>headers<span class="token punctuation">.</span>post<span class="token punctuation">[</span><span class="token string">'Content-Type'</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">'application/x-www-form-urlencoded'</span>
+
+  <span class="token comment" spellcheck="true">// 请求回调</span>
+  axios<span class="token punctuation">.</span><span class="token function">onRequest</span><span class="token punctuation">(</span>config <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+  <span class="token comment" spellcheck="true">// 返回回调</span>
+  axios<span class="token punctuation">.</span><span class="token function">onResponse</span><span class="token punctuation">(</span>res <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+  <span class="token comment" spellcheck="true">// 错误回调</span>
+  axios<span class="token punctuation">.</span><span class="token function">onError</span><span class="token punctuation">(</span>error <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><strong>然后在plugins配置它</strong></p>
+<pre class=" language-javascript"><code class="language-javascript">module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  plugins<span class="token punctuation">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      src<span class="token punctuation">:</span> <span class="token string">"~/plugins/axios"</span><span class="token punctuation">,</span>
+      ssr<span class="token punctuation">:</span> <span class="token boolean">false</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><strong>9. 默认Meta标签</strong><br><strong>nuxt.config.js</strong></p>
+<pre class=" language-javascript"><code class="language-javascript">module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  head<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    title<span class="token punctuation">:</span> <span class="token string">'your project title'</span><span class="token punctuation">,</span>
+    meta<span class="token punctuation">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span> charset<span class="token punctuation">:</span> <span class="token string">'utf-8'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> name<span class="token punctuation">:</span> <span class="token string">'viewport'</span><span class="token punctuation">,</span> content<span class="token punctuation">:</span> <span class="token string">'width=device-width, initial-scale=1'</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    link<span class="token punctuation">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span> rel<span class="token punctuation">:</span> <span class="token string">'stylesheet'</span><span class="token punctuation">,</span> href<span class="token punctuation">:</span> <span class="token string">'https://fonts.googleapis.com/css?family=Roboto'</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><strong>10. 页面组件特有的Meta标签</strong></p>
+<pre class=" language-vue"><code class="language-vue"><script>
+export default {
+  head () {
+    return {
+      meta: 
+      [
+        {
+          name: 'keywords',
+          content: '最强王者,今晚吃鸡'
+        },
+      ]
+    }
+  }
+}
+</script>
+</code></pre>
+<p><strong>11. 动态路由的Meta标签填充</strong><br><strong>游戏详情页面举例子，由于数据是异步获取的，需要把数据获取写在asyncData钩子，待数据获取成功才会渲染该页面组件</strong></p>
+<pre class=" language-vue"><code class="language-vue"><script>
+export default {
+  async asyncData ({ app, params }) {
+    let data = await app.$axios.get(`/appinfo/${params.id}`);
+    return {
+      appname: data.appinfo.appname
+    }
+  },
+  head () {
+    return {
+      meta: 
+      [
+        {
+          name: 'keywords',
+          content: `${this.appname},无限宝石,无限元宝`
+        },
+      ]
+    }
+  }
+}
+</script>
+</code></pre>
+<p><strong>12. 使用Vuex</strong><br><strong><code>nuxt</code>自己集成了<code>vuex</code>，所以<code>不需要安装</code>，<code>在/store目录下新建index.js</code>即可使用</strong></p>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">import</span> Vuex <span class="token keyword">from</span> <span class="token string">'vuex'</span>
+
+<span class="token keyword">let</span> store <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token keyword">new</span> <span class="token class-name">Vuex<span class="token punctuation">.</span>Store</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  state<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    token<span class="token punctuation">:</span> <span class="token string">''</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  mutations<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    setToken <span class="token punctuation">(</span>state<span class="token punctuation">,</span> token<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+       state<span class="token punctuation">.</span>token <span class="token operator">=</span> token
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> store
+</code></pre>
+<p><strong>13. 登录状态？</strong><br><strong>vue-cli项目中，可以用<code>vuex-persistedstate</code>，它可以使vuex的状态持久化，页面刷新都<code>不会丢失</code>，原理当然是localStorage啦！问题来了，<code>nuxt</code>项目怎么保存登录状态呢？当然上面这两种方法我们都可以使用，但是有个问题，由于在<code>created</code>钩子中不存在<code>window</code>对象(获取<code>cookie、localStorage</code>都需要<code>window</code>对象)，当需要判断是否存在<code>token</code>的时候，必须要在<code>mounted</code>进行操作，这说明页面进来的<code>一瞬间</code>你无法得知<code>是否已经登录了</code>，这会<code>导致</code>显示用户名、组件显示于隐藏都<code>慢半拍</code></strong></p>
+<p><strong><code>nuxt</code>非常友好，它提供了<code>fetch钩子</code>，还有<code>nuxtServerInit</code>，这两个钩子都运行在服务端并且我们能很<code>快速</code>地操作<code>store</code></strong></p>
+<p><strong>14. fetch的使用</strong><br><strong>如果页面组件设置了fetch方法，它会在组件每次加载前被调用（在服务端或切换至目标路由之前），此方法需要跟服务端的人员配合</strong></p>
+<pre class=" language-vue"><code class="language-vue"><script>
+export default {
+  async fetch ({ app, store, params }) {
+    let { data } = app.$axios.get('/token');
+    store.commit('setToken', data.token);
+  }
+}
+</script>
+</code></pre>
+<p><strong>15. nuxtServerInit</strong><br><strong>终极无敌方法</strong></p>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">import</span> Vuex <span class="token keyword">from</span> <span class="token string">'vuex'</span>
+
+<span class="token keyword">let</span> store <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token keyword">new</span> <span class="token class-name">Vuex<span class="token punctuation">.</span>Store</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  state<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    token<span class="token punctuation">:</span> <span class="token string">''</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  mutations<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    setToken <span class="token punctuation">(</span>state<span class="token punctuation">,</span> token<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+       state<span class="token punctuation">.</span>token <span class="token operator">=</span> token
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  actions<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    <span class="token function">nuxtServerInit</span><span class="token punctuation">(</span><span class="token punctuation">{</span> commit <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> req <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">let</span> cookie <span class="token operator">=</span> req<span class="token punctuation">.</span>headers<span class="token punctuation">.</span>cookie<span class="token punctuation">;</span>
+
+      <span class="token comment" spellcheck="true">// 将cookie转成json对象（自己实现该方法）</span>
+      <span class="token keyword">let</span> token <span class="token operator">=</span> <span class="token function">cookieparse</span><span class="token punctuation">(</span>cookie<span class="token punctuation">)</span><span class="token punctuation">.</span>token<span class="token punctuation">;</span>
+      <span class="token function">commit</span><span class="token punctuation">(</span><span class="token string">'setToken'</span><span class="token punctuation">,</span> token<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> store
+</code></pre>
+<p><strong>16. 封装自己的全局方法</strong></p>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">let</span> utils <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">let</span> printMsg <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span>msg<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    msg <span class="token operator">&amp;&amp;</span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>msg<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">let</span> otherFn <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span>msg<span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+
+  <span class="token keyword">return</span> <span class="token punctuation">{</span>
+    printMsg<span class="token punctuation">,</span>
+    otherFn
+  <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span>
+
+Vue<span class="token punctuation">.</span>prototype<span class="token punctuation">.</span>$utils<span class="token operator">=</span> utils
+</code></pre>
+<p><strong>组件调用</strong></p>
+<pre class=" language-vue"><code class="language-vue"><script>
+export default {
+  created() {
+    this.$zexin.message('小老弟，你怎么回事')
+  }
+}
+</script>
+</code></pre>
+<p><strong>需要在plugins中配置</strong></p>
+<p><strong>17. 全局样式</strong><br><strong>nuxt.config.js</strong></p>
+<pre class=" language-javascript"><code class="language-javascript">module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  css<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'~/assets/stylesheets/main.min.css'</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><strong>18. 使用Element-UI</strong><br><strong>还是plugins文件夹新建element-ui.js</strong></p>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token comment" spellcheck="true">// 全局引入</span>
+<span class="token keyword">import</span> Vue <span class="token keyword">from</span> <span class="token string">'vue'</span>
+<span class="token keyword">import</span> ElementUI <span class="token keyword">from</span> <span class="token string">'element-ui'</span>
+
+Vue<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>ElementUI<span class="token punctuation">)</span>
+
+<span class="token comment" spellcheck="true">// 按需引入</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> Button<span class="token punctuation">,</span> Loading<span class="token punctuation">,</span> MessageBox <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'element-ui'</span>
+
+Vue<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>Button<span class="token punctuation">)</span>
+Vue<span class="token punctuation">.</span>prototype<span class="token punctuation">.</span>$loading <span class="token operator">=</span> Loading<span class="token punctuation">.</span>service
+Vue<span class="token punctuation">.</span>prototype<span class="token punctuation">.</span>$msgbox <span class="token operator">=</span> MessageBox
+</code></pre>
+<p><strong>nuxt.config.js</strong></p>
+<pre class=" language-javascript"><code class="language-javascript">module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  css<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'element-ui/lib/theme-chalk/index.css'</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  plugins<span class="token punctuation">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      src<span class="token punctuation">:</span> <span class="token string">"~/plugins/element"</span><span class="token punctuation">,</span>
+      ssr<span class="token punctuation">:</span> <span class="token boolean">true</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><strong>18. 如何使用sass预处理器</strong><br><strong>安装依赖</strong></p>
+<pre><code>$ npm install node-sass sass-loader --save
+</code></pre><p><strong>组件中使用(不需要其他的配置了)</strong></p>
+<pre class=" language-vue"><code class="language-vue"><style lang="scss" scoped>
+
+</style>
+</code></pre>
+<p><strong>19. fetch、asyncData、validate使用范围</strong><br><strong><code>只能在页面组件使用，也就是pages目录下的组件，而不是components目录下的组件，要有所区分</code></strong></p>
+<p><strong>20. 传统部署</strong></p>
+<pre><code>$ npm run build &amp;&amp; npm run start
+</code></pre><p><strong>21. pm2部署</strong><br><strong>pm2能永久保持应用程序活跃，无需停机即可重新加载它们，并不需要传统部署的.nuxt文件夹，该部署方法也跟生产环境一样包含热更新</strong></p>
+<p>全局安装</p>
+<pre><code>$ npm install pm2 -g
+</code></pre><p>启动服务</p>
+<pre><code>$ npm run build
+$ pm2 start ./node_modules/nuxt/bin/nuxt-start
+</code></pre><h2 id="要绕的坑"><a href="#要绕的坑" class="headerlink" title="要绕的坑"></a>要绕的坑</h2><p><strong>坑一： <code>vue-server-renderer版本要保持与vue版本一起更新, 如果有一方没有及时更新将会有很多尴尬的报错</code></strong></p>
+<blockquote>
+<ul>
+<li><strong>vue &amp; vue-server-renderer 2.3.0+</strong></li>
+<li><strong>vue-router 2.5.0+</strong></li>
+<li><strong>vue-loader 12.0.0+ &amp; vue-style-loader 3.0.0+</strong></li>
+</ul>
+</blockquote>
+<p><strong>如果先前已经使用过 Vue 2.2 的服务器端渲染(SSR)，推荐的代码结构现在略有不同（使用新的 runInNewContext 选项，并设置为 false）</strong></p>
+<p><strong>坑二: <code>数据响应</code></strong><br><strong>不希望不同的用户每次访问的都是同一个server实例, 这会导致非常麻烦的交叉请求的数据污染问题</strong><br><strong>所以每次打开一定要是一个全新的实例, 每次都是工厂创建出来的新的实例</strong><br><strong>由于把请求数据的过程放在了server端来完成, 所以也不需要在前端做出数据响应的操作, 这样可以规避<code>数据</code>转换为<code>响应式对象</code>所产生的性能开销</strong><br><strong>可以说是将多个ajax的请求合并为了一个</strong><br><strong>也就是说平时在客户端根据后台返回的数据来做出if else 的判断都可以不用写了, 比如说tabel的loding组件等等</strong></p>
+<p><strong>坑三：<code>组件生命周期</code></strong><br><strong>众所周知，<code>Vue</code>的生命周期全都跑在<code>客户端(浏览器)</code>，而<code>Nuxt</code>的生命周期有些在<code>服务端(Node)，客户端，甚至两边都在</code></strong><br><strong>由于没有动态更新, 所有的生命周期钩子函数中只有<code>beforeCreate</code>和<code>created</code>会在服务端渲染(SSR)过程中被调用. </strong><br><strong>所以在写代码的过程中, 处理交互和初始化数据的时候不要写在这两个生命周期里, 因为在server端执行过之后, 在客户端就不执行了, 它们是同一套生命周期</strong></p>
+<blockquote>
+<p><strong>我们先来想一下，在纯浏览器渲染的Vue项目中，我们是怎么获取异步数据并渲染到组件中的？一般是在created或者mounted生命周期里发起异步请求，然后在成功回调里执行this.data = xxx，Vue监听到数据发生改变，走后面的Dom Diff，打patch，做DOM更新。</strong></p>
+<p><strong>那么服务端渲染可不可以也这么做呢？答案是不行的。</strong></p>
+<p><strong>在mounted里肯定不行，因为SSR都没有mounted生命周期，所以在这里肯定不行。</strong><br><strong>在beforeCreate里发起异步请求是否可以呢，也是不行的。因为请求是异步的，可能还没有等接口返回，服务端就已经把html字符串拼接出来了。</strong></p>
+<p><strong>所以，参考一下官方文档，可以得到以下思路：</strong></p>
+<p><strong>在渲染前，要预先获取所有需要的异步数据，然后存到Vuex的store中。</strong><br><strong>在后端渲染时，通过Vuex将获取到的数据注入到相应组件中。</strong><br><strong>把store中的数据设置到window.<strong>INITIAL_STATE</strong>属性中。</strong><br><strong>在浏览器环境中，通过Vuex将window.<strong>INITIAL_STATE</strong>里面的数据注入到相应组件中。</strong></p>
+<p><strong>正常情况下，通过这几个步骤，服务端吐出来的html字符串相应组件的数据都是最新的，所以第4步并不会引起DOM更新，但如果出了某些问题，吐出来的html字符串没有相应数据，Vue也可以在浏览器端通过`Vuex注入数据，进行DOM更新。</strong></p>
+</blockquote>
+<p><strong>所以要将类似的操作放在beforeMounted或mounted钩子中执行</strong><br><strong>而希望数据的获取越早越好,页面的展示越快越好, 通常会把请求放在created里面去进行操作</strong><br><strong>而且在server端created创建的副作用操作如定时器, 你在客户端是无法销毁的</strong></p>
+<p><strong>坑四: <code>自定义指令</code></strong><br><strong>大部分的自定义指令是用来操作DOM的, 而在server端是没有window也没用document的,所以就会报错</strong><br><strong>这块就看文档吧, 稍微有些复杂</strong></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><h3 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h3><p>大部分的小团队项目的node服务都是基于express来做的, 处理起来比较简单, 基本上之拦截请求, 剩下的交给vue-server来处理, 之前只需要一个<code>npm run build</code>就可以完成打包, 之后将静态文件部署至服务器就可以了, 现在多了一个server, 就需要前端自己来维护它, 前期可能要经常去看进程管理, 去看内存有没有溢出等一系列问题, 这也是需要权衡的的部分, 而且通常这种情况下搭建的server健壮性是很弱的, 需要有足够宽的知识面。</p>
+<h3 id="更多的服务器负载"><a href="#更多的服务器负载" class="headerlink" title="更多的服务器负载"></a>更多的服务器负载</h3><p>在Node.js渲染过程中, server端的CPU负担要比仅仅只提供静态资源的SPA大很多, 需要考虑在server端的<code>高并发</code>以及<code>负载均衡</code>等维护成本, 可能需要前端人员去兼职运维的工作。</p>
+<h3 id="是否真的需要’它’"><a href="#是否真的需要’它’" class="headerlink" title="是否真的需要’它’"></a>是否真的需要’它’</h3><p>项目需要SEO和很频繁的数据IO那么可能需要SSR, 但如果需要进行很多密集的运算的时候, 那么SSR的优势将越来越小。</p>
+]]></content>
+      
+        <categories>
+            
+            <category> Javascript </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Vue SSR </tag>
+            
+            <tag> Nuxt.js </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[JavaScript的事件循环机制]]></title>
       <url>http://www.imaxin.cn/2018/11/01/sth/JavaScript%E7%9A%84%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF%E6%9C%BA%E5%88%B6/</url>
-      <content type="html"><![CDATA[<p>编写中…</p>
+      <content type="html"><![CDATA[<h2 id="JS是单线程语言"><a href="#JS是单线程语言" class="headerlink" title="JS是单线程语言"></a>JS是单线程语言</h2><p>javascript是一门单线程语言，HTML5中提出了Web-Worker，但javascript是单线程这一核心仍未改变。<br>与它的用途有关。作为浏览器脚本语言，JavaScript的主要用途是与用户互动，以及操作DOM。<br>这决定了它只能是单线程，否则会带来很复杂的同步问题。比如，假定JavaScript同时有两个线程，一个线程在某个DOM节点上添加内容，另一个线程删除了这个节点，这时浏览器应该以哪个线程为准？</p>
+<p>所以，为了避免复杂性，从一诞生，JavaScript就是单线程，这已经成了这门语言的核心特征。</p>
+<h2 id="任务队列"><a href="#任务队列" class="headerlink" title="任务队列"></a>任务队列</h2><h3 id="同步任务与异步任务"><a href="#同步任务与异步任务" class="headerlink" title="同步任务与异步任务"></a>同步任务与异步任务</h3><p>单线程就意味着，所有任务需要排队。所有任务可以分成两种，一种是同步任务（synchronous），另一种是异步任务（asynchronous）。同步任务指的是，在主线程上排队执行的任务，只有前一个任务执行完毕，才能执行后一个任务；异步任务指的是，不进入主线程、而进入”任务队列”（task queue）的任务，只有”任务队列”通知主线程，某个异步任务可以执行了，该任务才会进入主线程执行。<br>异步执行的运行机制如下：</p>
+<ol>
+<li>所有同步任务都在主线程上执行，形成一个执行栈</li>
+<li>主线程之外，还存在一个”任务队列”。只要异步任务有了运行结果，就在”任务队列”之中放置一个事件。</li>
+<li>一旦”执行栈”中的所有同步任务执行完毕，系统就会读取”任务队列”，看看里面有哪些事件。那些对应的异步任务，于是结束等待状态，进入执行栈，开始执行。</li>
+<li>主线程不断重复上面的第三步。</li>
+</ol>
+<h3 id="JS引擎执行模型"><a href="#JS引擎执行模型" class="headerlink" title="JS引擎执行模型"></a>JS引擎执行模型</h3><p>所有的异步结果都是通过 “任务队列(Task Queue)” 来调度被调度. 消息队列中存放的是一个个的任务(Task).<br>Task分为两大类, 分别是 Macro Task（宏任务） 和 Micro Task（微任务）, 并且每个 Macro Task 结束后, 都要清空所有的 Micro Task.<br>Macrotask 会进入 Macro Task Queue, Microtask 会进入 Micro Task Queue。</p>
+<ul>
+<li><p>Macrotask 包括：</p>
+<ul>
+<li>setTimeout</li>
+<li>setInterval</li>
+<li>setImmediate</li>
+<li>script</li>
+<li>I/O</li>
+<li>UI rendering</li>
+</ul>
+</li>
+<li><p>Microtask 包括：</p>
+<ul>
+<li>process.nextTick</li>
+<li>Promise.then</li>
+<li>Object.observe(该方法已废弃)</li>
+<li>MutaionObserver</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p> 所说的, ‘每个 MacroTask 结束后, 都要清空所有的 Micro Task‘。引擎会遍历 Macro Task Queue, 对于每个 MacroTask 执行完毕后都要遍历执行 Tick Task Queue 的所有任务, 紧接着再遍历 MicroTask Queue 的所有任务. (nextTick 会优于 Promise执行)</p>
+</blockquote>
+<h2 id="Event-Loop"><a href="#Event-Loop" class="headerlink" title="Event Loop"></a>Event Loop</h2><p>主线程从”任务队列”中读取事件，这个过程是循环不断的，所以整个的这种运行机制又称为Event Loop.</p>
+<p>先来个例子检验一下：</p>
+<pre class=" language-javascript"><code class="language-javascript">console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'main1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+process<span class="token punctuation">.</span><span class="token function">nextTick</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'process.nextTick1'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'setTimeout'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  process<span class="token punctuation">.</span><span class="token function">nextTick</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'process.nextTick2'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span>resolve<span class="token punctuation">,</span> reject<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'promise'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'promise then'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'main2'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>执行顺序<br>分析如下</p>
+<ol>
+<li>开始执行代码，输出 main1，process.nextTick 放入TickTask Queue，setTimeout放入 MacroTask Queue, new Promise 执行 输出 promise，then 方法 放入 MicroTask Queue , 接着 最后一行代码 console.log 输出 main2</li>
+<li>当前的 宏任务执行完毕，开始清空微任务，先清空TickTask Queue ,执行 console.log(‘process.nextTick1’); 输出’process.nextTick1；再清空MicroTask Queue执行 console.log(‘promise then’); 输出promise then；微任务全部清空。</li>
+<li>开始下次 eventLoop; 执行 setTimeout； 第一行 console.log(‘setTimeout’); 输出setTimeout； process.nextTick 将任务放入了TickTask Queue；当前宏任务执行完毕；开始清空MicroTask Queue，清空TickTaskQueue ,执行 console.log(‘process.nextTick2’);输出process.nextTick2</li>
+</ol>
 ]]></content>
       
         <categories>
@@ -226,14 +686,6 @@ myEmitter<span class="token punctuation">.</span><span class="token function">em
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token keyword">catch</span><span class="token punctuation">(</span>err <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
   console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span>
-</code></pre>
-<p>按顺序请求接口数据</p>
-<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">fetchFn</span><span class="token punctuation">(</span>url<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">return</span> <span class="token function">fetch</span><span class="token punctuation">(</span>url<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span>res <span class="token operator">=</span><span class="token operator">></span> res<span class="token punctuation">.</span><span class="token function">json</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-<span class="token punctuation">}</span>
-<span class="token keyword">let</span> fruit <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'apple'</span><span class="token punctuation">,</span> <span class="token string">'banana'</span><span class="token punctuation">,</span> <span class="token string">'strawberry'</span><span class="token punctuation">,</span> <span class="token string">'watermelon'</span><span class="token punctuation">]</span>
-<span class="token keyword">let</span> appleApi <span class="token operator">=</span> <span class="token function">fetchFn</span><span class="token punctuation">(</span><span class="token string">'https://cjjl.chelun.com/ChinaNiceCoach/getGiftList?fruit=apple'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">let</span> bananaApi <span class="token operator">=</span> <span class="token string">'https://google.com/getApple?sort=1'</span><span class="token punctuation">;</span>
 </code></pre>
 <h3 id="Promise-all"><a href="#Promise-all" class="headerlink" title="Promise.all"></a>Promise.all</h3><p>如果多个异步任务没有先后顺序依赖，可以并发执行，并且需要在所有任务执行完毕后得到结果的话，可以使用Promise.all</p>
 <p>p1,p2是两个promise对象实例，获得成功结果的数组里面的数据顺序和Promise.all接收到的数组顺序是一致的，即p1的结果在前，即便p1的结果获取的比p2要晚。</p>
@@ -463,7 +915,7 @@ console<span class="token punctuation">.</span><span class="token function">log<
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 </code></pre>
-<p><a href="https://www.cnblogs.com/nullcc/p/5841182.html" target="_blank" rel="external">文章1</a><br><a href="https://www.cnblogs.com/wuguanglin/p/EventLoop.html" target="_blank" rel="external">文章2</a><br><a href="https://nullcc.github.io/" target="_blank" rel="external">博客</a></p>
+<p>await关键字会把后面跟的返回值转为Promise对象</p>
 ]]></content>
       
         <categories>
@@ -833,215 +1285,6 @@ console<span class="token punctuation">.</span><span class="token function">log<
 </code></pre>
 </li>
 </ul>
-]]></content>
-      
-        <categories>
-            
-            <category> vue </category>
-            
-        </categories>
-        
-        
-        <tags>
-            
-            <tag> vue </tag>
-            
-        </tags>
-        
-    </entry>
-    
-    <entry>
-      <title><![CDATA[vue2.0 vue-router]]></title>
-      <url>http://www.imaxin.cn/2017/03/30/vue/vue%E4%B8%AD%E7%9A%84%E8%B7%AF%E7%94%B1/</url>
-      <content type="html"><![CDATA[<h3 id="vue中的路由"><a href="#vue中的路由" class="headerlink" title="vue中的路由"></a>vue中的路由</h3><ul>
-<li>基本路由</li>
-<li>不同的路径 返回不同的内容</li>
-<li>spa 不同的路径显示不同的组件</li>
-</ul>
-<pre class=" language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>app<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>router-link</span> <span class="token attr-name">to</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>/home<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>home<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>router-link</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>router-link</span> <span class="token attr-name">to</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>/list<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>list<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>router-link</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>router-view</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>router-view</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
-</code></pre>
-<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">var</span> home <span class="token operator">=</span> <span class="token punctuation">{</span>template<span class="token punctuation">:</span> <span class="token string">'&lt;div>首页&lt;/div>'</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
-<span class="token keyword">var</span> list <span class="token operator">=</span> <span class="token punctuation">{</span>template<span class="token punctuation">:</span> <span class="token string">'&lt;div>列表页&lt;/div>'</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
-<span class="token keyword">const</span> routes <span class="token operator">=</span> <span class="token punctuation">[</span>
-    <span class="token punctuation">{</span>path<span class="token punctuation">:</span> <span class="token string">'/home'</span><span class="token punctuation">,</span> component<span class="token punctuation">:</span> home<span class="token punctuation">}</span><span class="token punctuation">,</span>
-    <span class="token punctuation">{</span>path<span class="token punctuation">:</span> <span class="token string">'/list'</span><span class="token punctuation">,</span> component<span class="token punctuation">:</span> list<span class="token punctuation">}</span>
-<span class="token punctuation">]</span><span class="token punctuation">;</span>
-<span class="token keyword">var</span> router <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">VueRouter</span><span class="token punctuation">(</span><span class="token punctuation">{</span> routes <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">var</span> vm <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Vue</span><span class="token punctuation">(</span><span class="token punctuation">{</span> router <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">$mount</span><span class="token punctuation">(</span><span class="token string">'#app'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-</code></pre>
-<h4 id="router-link"><a href="#router-link" class="headerlink" title="router-link"></a>router-link</h4><p>1) to</p>
-<ul>
-<li>router-link标签模版编译后默认会自动转换成a标签，</li>
-<li>to 表示目标路由的链接。</li>
-<li>当被点击后，内部会立刻把 to 的值传到 router.push()</li>
-<li>这个值可以是一个字符串或者是描述目标位置的对象</li>
-<li>子路由的链接字符串不能加”/“, “/“代表根路径</li>
-</ul>
-<pre class=" language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>router-link</span> <span class="token attr-name">to</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>/home<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>首页<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>router-link</span><span class="token punctuation">></span></span>
-
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>router-link</span> <span class="token attr-name">:to</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>{path: <span class="token punctuation">'</span>/food<span class="token punctuation">'</span>}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>food<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>router-link</span><span class="token punctuation">></span></span>
-
-<span class="token comment" spellcheck="true">&lt;!-- 命名的路由 --></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>router-link</span> <span class="token attr-name">:to</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>{name:<span class="token punctuation">'</span>user<span class="token punctuation">'</span>, params:{userId:123}}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>User<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>router-link</span><span class="token punctuation">></span></span>
-
-<span class="token comment" spellcheck="true">&lt;!--查询参数--></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>router-link</span> <span class="token attr-name">:to</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>{path:<span class="token punctuation">'</span>register<span class="token punctuation">'</span>, query:{plan:<span class="token punctuation">'</span>private<span class="token punctuation">'</span>}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>regester<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>router-link</span><span class="token punctuation">></span></span>
-</code></pre>
-<p>2) tag</p>
-<ul>
-<li>不想默认让router-link是a标签，加上tag=”li”</li>
-</ul>
-<pre class=" language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>router-link</span> <span class="token attr-name">:to</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>{path: <span class="token punctuation">'</span>/food<span class="token punctuation">'</span>}<span class="token punctuation">"</span></span> <span class="token attr-name">tag</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>li<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>food<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>router-link</span><span class="token punctuation">></span></span>
-</code></pre>
-<h4 id="动态路由匹配"><a href="#动态路由匹配" class="headerlink" title="动态路由匹配"></a>动态路由匹配</h4><pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">const</span> User <span class="token operator">=</span> <span class="token punctuation">{</span>
-  template<span class="token punctuation">:</span> <span class="token string">'&lt;div>User {{ $route.params.id }}&lt;/div>'</span>
-<span class="token punctuation">}</span>
-
-<span class="token keyword">const</span> router <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">VueRouter</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
-  routes<span class="token punctuation">:</span> <span class="token punctuation">[</span>
-    <span class="token comment" spellcheck="true">// 动态路径参数 以冒号开头</span>
-    <span class="token punctuation">{</span> path<span class="token punctuation">:</span> <span class="token string">'/user/:id'</span><span class="token punctuation">,</span> component<span class="token punctuation">:</span> User <span class="token punctuation">}</span>
-  <span class="token punctuation">]</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span>
-</code></pre>
-<ul>
-<li>把路径设置成动态的 /user/:id 这样，访问的url是 /user/3 也是可以匹配到的</li>
-<li>调用 vm.$route.params 可以得到一个对象 {id: 3}</li>
-<li>复杂一点的 /user/:username/post/:post_id =&gt; /user/evan/post/123 =&gt; { username: ‘evan’, post_id: 123 }</li>
-<li>除了$route.params外 还有 $route.query  $route.hash 等</li>
-<li>this.$route (这里存放的都是关于路由的信息) </li>
-<li>this.$router (这里存放的是路由的方法)</li>
-</ul>
-<h4 id="嵌套路由"><a href="#嵌套路由" class="headerlink" title="嵌套路由"></a>嵌套路由</h4><ul>
-<li>template标签包裹的内容必须只能拥有一个根节点</li>
-</ul>
-]]></content>
-      
-        <categories>
-            
-            <category> vue </category>
-            
-        </categories>
-        
-        
-        <tags>
-            
-            <tag> vue </tag>
-            
-        </tags>
-        
-    </entry>
-    
-    <entry>
-      <title><![CDATA[vue2.0基本语法(2)]]></title>
-      <url>http://www.imaxin.cn/2017/03/30/vue/vue%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/</url>
-      <content type="html"><![CDATA[<h3 id="vue生命周期"><a href="#vue生命周期" class="headerlink" title="vue生命周期"></a>vue生命周期</h3><ul>
-<li>针对的是组件，根组件也是组件，仍然遵循这个流程<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">var</span> vm <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Vue</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
-  el<span class="token punctuation">:</span> <span class="token string">'.app'</span><span class="token punctuation">,</span>
-  data<span class="token punctuation">:</span> <span class="token punctuation">{</span>message<span class="token punctuation">:</span> <span class="token string">'hello'</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
-  msg<span class="token punctuation">:</span> <span class="token string">'world'</span><span class="token punctuation">,</span>
-  <span class="token function">beforeCreate</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">'创建之前'</span><span class="token punctuation">)</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token function">created</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">'创建完成'</span><span class="token punctuation">)</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token function">beforeMount</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">'开始挂载'</span><span class="token punctuation">)</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token function">mounted</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">'挂载完成'</span><span class="token punctuation">)</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token function">beforeUpdate</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">'开始更新'</span><span class="token punctuation">)</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token function">updated</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">'更新之后'</span><span class="token punctuation">)</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token function">beforeDestroy</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">'销毁之前'</span><span class="token punctuation">)</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token function">destroyed</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">'销毁之后'</span><span class="token punctuation">)</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-vm<span class="token punctuation">.</span><span class="token function">$mount</span><span class="token punctuation">(</span><span class="token string">'.app'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">// 等价于写el: '.app'</span>
-<span class="token comment" spellcheck="true">//vm.$destroy();  // 销毁组件</span>
-console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>vm<span class="token punctuation">.</span>$data<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 就是data这整个对象</span>
-console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>vm<span class="token punctuation">.</span>$options<span class="token punctuation">.</span>msg<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 在实例上自定义数据，没有放在data中的</span>
-<span class="token comment" spellcheck="true">// 所有带$的都是vue内部属性，vue提供的</span>
-</code></pre>
-</li>
-<li>钩子函数：每个阶段都会调用这个函数</li>
-</ul>
-<ol>
-<li>beforeCreate() =&gt; 创建之前 一般不使用</li>
-<li>created() =&gt; 创建完成后 可以获取数据</li>
-<li>beforeMount() =&gt; 开始挂载</li>
-<li>mounted() =&gt; 挂载完成 在mounted中也可以获取数据 页面加载完成会调用此函数</li>
-</ol>
-<p>-&gt; 更新 拦截 数据更新就会调用这两个函数</p>
-<ol>
-<li>beforeUpdate() =&gt; 开始更新</li>
-<li><p>updated() =&gt; 更新之后</p>
-</li>
-<li><p>beforeDestroy() =&gt; 销毁之前</p>
-</li>
-<li>destroyed() =&gt; 销毁之后</li>
-</ol>
-<h3 id="directives"><a href="#directives" class="headerlink" title="directives"></a>directives</h3><ul>
-<li>自定义指令：v-自定义指令-用横杠连接<pre class=" language-javascript"><code class="language-javascript">directives<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-  <span class="token function">autoFocus</span><span class="token punctuation">(</span>ele<span class="token punctuation">,</span> bindings<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-      <span class="token keyword">if</span> <span class="token punctuation">(</span>bindings<span class="token punctuation">.</span>value<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-          ele<span class="token punctuation">.</span><span class="token function">focus</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-      <span class="token punctuation">}</span>
-  <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
-</code></pre>
-</li>
-</ul>
-<h3 id="H5本地存储-localStorage"><a href="#H5本地存储-localStorage" class="headerlink" title="H5本地存储 localStorage"></a>H5本地存储 localStorage</h3><pre class=" language-javascript"><code class="language-javascript">localStorage<span class="token punctuation">.</span><span class="token function">setItem</span><span class="token punctuation">(</span><span class="token string">'todos'</span><span class="token punctuation">,</span> JSON<span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>todos<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-JSON<span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>localStorage<span class="token punctuation">.</span><span class="token function">getItem</span><span class="token punctuation">(</span><span class="token string">'todos'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-localStorage<span class="token punctuation">.</span><span class="token function">removeItem</span><span class="token punctuation">(</span><span class="token string">'todos'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>   <span class="token comment" spellcheck="true">// 移除</span>
-</code></pre>
-<p>将数据以键值对的方式存储在浏览器本地</p>
-<h3 id="hash值变化事件"><a href="#hash值变化事件" class="headerlink" title="hash值变化事件"></a>hash值变化事件</h3><pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">let</span> listener <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token comment" spellcheck="true">// 当hash值变化时会执行次函数，将当前hash值赋予给state</span>
-    vm<span class="token punctuation">.</span>state <span class="token operator">=</span> window<span class="token punctuation">.</span>location<span class="token punctuation">.</span>hash<span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token string">'complete'</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
-<span class="token function">listener</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-window<span class="token punctuation">.</span><span class="token function">addEventListener</span><span class="token punctuation">(</span><span class="token string">'hashchange'</span><span class="token punctuation">,</span> listener<span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-</code></pre>
-<p>通过更改锚点，模拟改变页面路由 =&gt; ‘hashchange’</p>
-<h3 id="vue中的组件"><a href="#vue中的组件" class="headerlink" title="vue中的组件"></a>vue中的组件</h3><h4 id="组件化开发"><a href="#组件化开发" class="headerlink" title="组件化开发"></a>组件化开发</h4><blockquote>
-<p>可以很直观的将一个复杂的页面分割成若干个独立组件,每个组件包含自己的逻辑和样式 再将这些独立组件组合完成一个复杂的页面。 这样既减少了逻辑复杂度，又实现了代码的重用。 页面是组件的容器，组件自由组合形成完整的界面，当不需要某个组件时，或者想要替换某个组件时，可以随时进行替换和删除，而不影响整个应用的运行</p>
-</blockquote>
-<p>好处：</p>
-<ol>
-<li>提高开发效率</li>
-<li>方便重复使用</li>
-<li>便于协同开发</li>
-<li>更容易被管理和维护</li>
-</ol>
-<h4 id="全局注册"><a href="#全局注册" class="headerlink" title="全局注册"></a>全局注册</h4><ol>
-<li>在标签中不能使用大写，标签名字多个单词时必须用段横线隔开</li>
-<li>全局注册 在所有实例中都可以使用这个组件</li>
-<li>组件需要行为 结构 数据</li>
-<li>组件的模版中只能有一个根元素</li>
-</ol>
-<pre class=" language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>app<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>my-component</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>my-component</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
-
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>app1<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>my-component</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>my-component</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
-
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>template</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>hello<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span>Hello<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span>World<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>template</span><span class="token punctuation">></span></span>
-</code></pre>
-<pre class=" language-javascript"><code class="language-javascript">Vue<span class="token punctuation">.</span><span class="token function">component</span><span class="token punctuation">(</span><span class="token string">'myComponent'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
-    template<span class="token punctuation">:</span> <span class="token string">'#hello'</span>  <span class="token comment" spellcheck="true">// 通过模版的id可以引用这个组件</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">var</span> vm <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Vue</span><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-vm<span class="token punctuation">.</span><span class="token function">$mount</span><span class="token punctuation">(</span><span class="token string">'#app'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-<span class="token keyword">var</span> vm1 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Vue</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
-    el<span class="token punctuation">:</span> <span class="token string">'#app1'</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-</code></pre>
 ]]></content>
       
         <categories>
@@ -2572,6 +2815,41 @@ div1<span class="token punctuation">.</span>onclick <span class="token operator"
     </entry>
     
     <entry>
+      <title><![CDATA[JS中的事件机制]]></title>
+      <url>http://www.imaxin.cn/2016/02/06/base/JS%E4%BA%8B%E4%BB%B6/</url>
+      <content type="html"><![CDATA[<h3 id="鼠标事件对象："><a href="#鼠标事件对象：" class="headerlink" title="鼠标事件对象："></a>鼠标事件对象：</h3><h4 id="产生："><a href="#产生：" class="headerlink" title="产生："></a>产生：</h4><p>标准浏览器中事件对象e存在于绑定的函数中，在ie8-中这个事件对象在window.event属性上。<br>e = e || window.event</p>
+<p>clientX：鼠标点击位置相对于窗口的X轴坐标<br>clientY： 鼠标点击位置相对于窗口的Y轴坐标</p>
+<h4 id="事件兼容"><a href="#事件兼容" class="headerlink" title="事件兼容"></a>事件兼容</h4><p>事件对象：</p>
+<pre class=" language-javascript"><code class="language-javascript">e <span class="token operator">=</span> e <span class="token operator">||</span> window<span class="token punctuation">.</span>event
+</code></pre>
+<p>事件源：</p>
+<pre class=" language-javascript"><code class="language-javascript">e<span class="token punctuation">.</span>target <span class="token operator">=</span> e<span class="token punctuation">.</span>target <span class="token operator">||</span> e<span class="token punctuation">.</span>srcElement<span class="token punctuation">;</span>
+</code></pre>
+<p>e.pageX: 鼠标位置相对于页面的X轴坐标<br>e.pageY: 鼠标位置相对于页面的Y轴坐标</p>
+<pre class=" language-javascript"><code class="language-javascript">e<span class="token punctuation">.</span>pageX <span class="token operator">=</span> e<span class="token punctuation">.</span>pageX <span class="token operator">||</span> e<span class="token punctuation">.</span>clientX <span class="token operator">+</span> <span class="token punctuation">(</span>document<span class="token punctuation">.</span>documentElement<span class="token punctuation">.</span>scrollLeft <span class="token operator">||</span> document<span class="token punctuation">.</span>body<span class="token punctuation">.</span>scrollLeft<span class="token punctuation">)</span><span class="token punctuation">;</span>
+e<span class="token punctuation">.</span>pageY <span class="token operator">=</span> e<span class="token punctuation">.</span>pageY <span class="token operator">||</span> e<span class="token punctuation">.</span>clientY <span class="token operator">+</span> <span class="token punctuation">(</span>document<span class="token punctuation">.</span>documentElement<span class="token punctuation">.</span>scrollTop <span class="token operator">||</span> document<span class="token punctuation">.</span>body<span class="token punctuation">.</span>scrollTop<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>阻止默认行为:</p>
+<pre class=" language-javascript"><code class="language-javascript">e<span class="token punctuation">.</span>preventDefault <span class="token operator">?</span> e<span class="token punctuation">.</span><span class="token function">preventDefault</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">:</span> returnValue <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+</code></pre>
+]]></content>
+      
+        <categories>
+            
+            <category> Javascript </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> 事件 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[作用域不释放]]></title>
       <url>http://www.imaxin.cn/2016/02/06/base/%E6%A0%88%E5%86%85%E5%AD%98%E4%B8%8D%E9%87%8A%E6%94%BE/</url>
       <content type="html"><![CDATA[<p>关于作用域不释放的小练习：</p>
@@ -2731,41 +3009,6 @@ obj<span class="token punctuation">.</span><span class="token function">fn</span
         <tags>
             
             <tag> 作用域 </tag>
-            
-        </tags>
-        
-    </entry>
-    
-    <entry>
-      <title><![CDATA[JS中的事件机制]]></title>
-      <url>http://www.imaxin.cn/2016/02/06/base/JS%E4%BA%8B%E4%BB%B6/</url>
-      <content type="html"><![CDATA[<h3 id="鼠标事件对象："><a href="#鼠标事件对象：" class="headerlink" title="鼠标事件对象："></a>鼠标事件对象：</h3><h4 id="产生："><a href="#产生：" class="headerlink" title="产生："></a>产生：</h4><p>标准浏览器中事件对象e存在于绑定的函数中，在ie8-中这个事件对象在window.event属性上。<br>e = e || window.event</p>
-<p>clientX：鼠标点击位置相对于窗口的X轴坐标<br>clientY： 鼠标点击位置相对于窗口的Y轴坐标</p>
-<h4 id="事件兼容"><a href="#事件兼容" class="headerlink" title="事件兼容"></a>事件兼容</h4><p>事件对象：</p>
-<pre class=" language-javascript"><code class="language-javascript">e <span class="token operator">=</span> e <span class="token operator">||</span> window<span class="token punctuation">.</span>event
-</code></pre>
-<p>事件源：</p>
-<pre class=" language-javascript"><code class="language-javascript">e<span class="token punctuation">.</span>target <span class="token operator">=</span> e<span class="token punctuation">.</span>target <span class="token operator">||</span> e<span class="token punctuation">.</span>srcElement<span class="token punctuation">;</span>
-</code></pre>
-<p>e.pageX: 鼠标位置相对于页面的X轴坐标<br>e.pageY: 鼠标位置相对于页面的Y轴坐标</p>
-<pre class=" language-javascript"><code class="language-javascript">e<span class="token punctuation">.</span>pageX <span class="token operator">=</span> e<span class="token punctuation">.</span>pageX <span class="token operator">||</span> e<span class="token punctuation">.</span>clientX <span class="token operator">+</span> <span class="token punctuation">(</span>document<span class="token punctuation">.</span>documentElement<span class="token punctuation">.</span>scrollLeft <span class="token operator">||</span> document<span class="token punctuation">.</span>body<span class="token punctuation">.</span>scrollLeft<span class="token punctuation">)</span><span class="token punctuation">;</span>
-e<span class="token punctuation">.</span>pageY <span class="token operator">=</span> e<span class="token punctuation">.</span>pageY <span class="token operator">||</span> e<span class="token punctuation">.</span>clientY <span class="token operator">+</span> <span class="token punctuation">(</span>document<span class="token punctuation">.</span>documentElement<span class="token punctuation">.</span>scrollTop <span class="token operator">||</span> document<span class="token punctuation">.</span>body<span class="token punctuation">.</span>scrollTop<span class="token punctuation">)</span><span class="token punctuation">;</span>
-</code></pre>
-<p>阻止默认行为:</p>
-<pre class=" language-javascript"><code class="language-javascript">e<span class="token punctuation">.</span>preventDefault <span class="token operator">?</span> e<span class="token punctuation">.</span><span class="token function">preventDefault</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">:</span> returnValue <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
-</code></pre>
-]]></content>
-      
-        <categories>
-            
-            <category> Javascript </category>
-            
-        </categories>
-        
-        
-        <tags>
-            
-            <tag> 事件 </tag>
             
         </tags>
         
@@ -3533,58 +3776,6 @@ console<span class="token punctuation">.</span><span class="token function">log<
     </entry>
     
     <entry>
-      <title><![CDATA[递归应用]]></title>
-      <url>http://www.imaxin.cn/2015/05/29/base/digui/</url>
-      <content type="html"><![CDATA[<p>快速排序就是递归思想实现的。</p>
-<h3 id="1到n之间不能被2整除的数的积"><a href="#1到n之间不能被2整除的数的积" class="headerlink" title="1到n之间不能被2整除的数的积"></a>1到n之间不能被2整除的数的积</h3><pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">caculate</span><span class="token punctuation">(</span>n<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>n <span class="token operator">===</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>n <span class="token operator">%</span> <span class="token number">2</span> <span class="token operator">===</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token function">caculate</span><span class="token punctuation">(</span>n <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">return</span> n <span class="token operator">*</span> <span class="token function">caculate</span><span class="token punctuation">(</span>n <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span>
-<span class="token punctuation">}</span>
-
-<span class="token keyword">var</span> total <span class="token operator">=</span> <span class="token function">caculate</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>total<span class="token punctuation">)</span>
-</code></pre>
-<h3 id="1-100-之间不能被3整除的数之和"><a href="#1-100-之间不能被3整除的数之和" class="headerlink" title="1 - 100 之间不能被3整除的数之和"></a>1 - 100 之间不能被3整除的数之和</h3><pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">excute</span><span class="token punctuation">(</span>n<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>n <span class="token operator">===</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>n <span class="token operator">%</span> <span class="token number">3</span> <span class="token operator">===</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token function">excute</span><span class="token punctuation">(</span>n <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">return</span> n <span class="token operator">+</span> <span class="token function">excute</span><span class="token punctuation">(</span>n <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span>
-<span class="token punctuation">}</span>
-<span class="token keyword">var</span> total <span class="token operator">=</span> <span class="token function">excute</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>total<span class="token punctuation">)</span>
-</code></pre>
-<h3 id="通过setTimeout实现setInterval功能"><a href="#通过setTimeout实现setInterval功能" class="headerlink" title="通过setTimeout实现setInterval功能"></a>通过setTimeout实现setInterval功能</h3><p>利用递归调用自身，比setInterval更易控制</p>
-<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">var</span> timer <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
-<span class="token keyword">var</span> count <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
-<span class="token keyword">function</span> <span class="token function">events</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    window<span class="token punctuation">.</span><span class="token function">clearTimeout</span><span class="token punctuation">(</span>timer<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 清除上一次定时器</span>
-    count<span class="token operator">++</span><span class="token punctuation">;</span>
-    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>count<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>count <span class="token operator">===</span> <span class="token number">3</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment" spellcheck="true">// 控制递归结束</span>
-        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'结束'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">return</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    timer <span class="token operator">=</span> <span class="token function">setTimeout</span><span class="token punctuation">(</span>events<span class="token punctuation">,</span> <span class="token number">1000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
-</code></pre>
-]]></content>
-      
-        <categories>
-            
-            <category> Javascript </category>
-            
-        </categories>
-        
-        
-        <tags>
-            
-            <tag> 递归 </tag>
-            
-        </tags>
-        
-    </entry>
-    
-    <entry>
       <title><![CDATA[数组的常用方法]]></title>
       <url>http://www.imaxin.cn/2015/05/29/base/array/</url>
       <content type="html"><![CDATA[<p>数组是值的有序集合，数组中每一项的值没有类型限制.</p>
@@ -3720,6 +3911,58 @@ arr<span class="token punctuation">.</span><span class="token function">myForEac
         <tags>
             
             <tag> Array </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[递归应用]]></title>
+      <url>http://www.imaxin.cn/2015/05/29/base/digui/</url>
+      <content type="html"><![CDATA[<p>快速排序就是递归思想实现的。</p>
+<h3 id="1到n之间不能被2整除的数的积"><a href="#1到n之间不能被2整除的数的积" class="headerlink" title="1到n之间不能被2整除的数的积"></a>1到n之间不能被2整除的数的积</h3><pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">caculate</span><span class="token punctuation">(</span>n<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>n <span class="token operator">===</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>n <span class="token operator">%</span> <span class="token number">2</span> <span class="token operator">===</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token function">caculate</span><span class="token punctuation">(</span>n <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> n <span class="token operator">*</span> <span class="token function">caculate</span><span class="token punctuation">(</span>n <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">var</span> total <span class="token operator">=</span> <span class="token function">caculate</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>total<span class="token punctuation">)</span>
+</code></pre>
+<h3 id="1-100-之间不能被3整除的数之和"><a href="#1-100-之间不能被3整除的数之和" class="headerlink" title="1 - 100 之间不能被3整除的数之和"></a>1 - 100 之间不能被3整除的数之和</h3><pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">excute</span><span class="token punctuation">(</span>n<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>n <span class="token operator">===</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>n <span class="token operator">%</span> <span class="token number">3</span> <span class="token operator">===</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token function">excute</span><span class="token punctuation">(</span>n <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> n <span class="token operator">+</span> <span class="token function">excute</span><span class="token punctuation">(</span>n <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">var</span> total <span class="token operator">=</span> <span class="token function">excute</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>total<span class="token punctuation">)</span>
+</code></pre>
+<h3 id="通过setTimeout实现setInterval功能"><a href="#通过setTimeout实现setInterval功能" class="headerlink" title="通过setTimeout实现setInterval功能"></a>通过setTimeout实现setInterval功能</h3><p>利用递归调用自身，比setInterval更易控制</p>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">var</span> timer <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> count <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+<span class="token keyword">function</span> <span class="token function">events</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    window<span class="token punctuation">.</span><span class="token function">clearTimeout</span><span class="token punctuation">(</span>timer<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 清除上一次定时器</span>
+    count<span class="token operator">++</span><span class="token punctuation">;</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>count<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>count <span class="token operator">===</span> <span class="token number">3</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment" spellcheck="true">// 控制递归结束</span>
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'结束'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    timer <span class="token operator">=</span> <span class="token function">setTimeout</span><span class="token punctuation">(</span>events<span class="token punctuation">,</span> <span class="token number">1000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+]]></content>
+      
+        <categories>
+            
+            <category> Javascript </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> 递归 </tag>
             
         </tags>
         

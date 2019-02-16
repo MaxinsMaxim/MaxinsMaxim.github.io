@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Vue SSR,Nuxt.js," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="SSR场景目前页面中的数据都是异步请求得来的, 截止目前各大搜索引擎可以很好的对同步JS代码进行抓取并索引,所以同步是关键的。如果页面进去就是个loading在转, 这些抓取工具则不会等待请求回来后再抓取，也将无法在Google, Bing以及百度搜索到。
+大部分项目用的SPA多数是偏B端或者与原生组合式开发H5+安卓/iOS的app产品， 所以还不需要考虑SEO。
+如果是面向C端，那纯SPA无法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nuxt踩坑之旅">
+<meta property="og:url" content="http://www.imaxin.cn/2019/02/14/sth/Nuxt踩坑之旅/index.html">
+<meta property="og:site_name" content="Maxin`s blog">
+<meta property="og:description" content="SSR场景目前页面中的数据都是异步请求得来的, 截止目前各大搜索引擎可以很好的对同步JS代码进行抓取并索引,所以同步是关键的。如果页面进去就是个loading在转, 这些抓取工具则不会等待请求回来后再抓取，也将无法在Google, Bing以及百度搜索到。
+大部分项目用的SPA多数是偏B端或者与原生组合式开发H5+安卓/iOS的app产品， 所以还不需要考虑SEO。
+如果是面向C端，那纯SPA无法">
+<meta property="og:updated_time" content="2019-02-16T11:24:03.774Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Nuxt踩坑之旅">
+<meta name="twitter:description" content="SSR场景目前页面中的数据都是异步请求得来的, 截止目前各大搜索引擎可以很好的对同步JS代码进行抓取并索引,所以同步是关键的。如果页面进去就是个loading在转, 这些抓取工具则不会等待请求回来后再抓取，也将无法在Google, Bing以及百度搜索到。
+大部分项目用的SPA多数是偏B端或者与原生组合式开发H5+安卓/iOS的app产品， 所以还不需要考虑SEO。
+如果是面向C端，那纯SPA无法">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.imaxin.cn/2019/02/14/sth/Nuxt踩坑之旅/"/>
+
+
+
+
+
+  <title>Nuxt踩坑之旅 | Maxin`s blog</title>
+  
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/css/prism-solarizedlight.css" type="text/css"><script src="/js/prism.js"></script></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Maxin`s blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.imaxin.cn/2019/02/14/sth/Nuxt踩坑之旅/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Maxin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Maxin`s blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Nuxt踩坑之旅</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-14T08:50:06+08:00">
+                2019-02-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Javascript/" itemprop="url" rel="index">
+                    <span itemprop="name">Javascript</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="SSR场景"><a href="#SSR场景" class="headerlink" title="SSR场景"></a>SSR场景</h2><p>目前页面中的数据都是异步请求得来的, 截止目前各大搜索引擎可以很好的对同步JS代码进行抓取并索引,所以同步是关键的。如果页面进去就是个loading在转, 这些抓取工具则不会等待请求回来后再抓取，也将无法在Google, Bing以及百度搜索到。</p>
+<p>大部分项目用的SPA多数是偏B端或者与原生组合式开发H5+安卓/iOS的app产品， 所以还不需要考虑SEO。</p>
+<p>如果是面向C端，那纯SPA无法满足SEO。</p>
+<h2 id="Nuxt-js的优点"><a href="#Nuxt-js的优点" class="headerlink" title="Nuxt.js的优点"></a>Nuxt.js的优点</h2><p>第一，更好的SEO。<br>简单来说就是可以将pages目录下的每个<code>页面组件</code>预先加载好并生各自成独立的HTML页面文件，采用服务端渲染，让SPA应用(Vue)也可以拥有SEO。</p>
+<p>第二，更快的内容到达时间。<br>换句话说也叫作”更快的完全可交互时间”，什么意思？其实内容到达未必能及时交互, 只是将内容展示出来了用户能看到了，也就是说要等JS,CSS,HTML完全加载完之后才能进行所谓的可交互。<br>这也是SSR想解决并且能解决的问题。<br>SSR的服务很有可能与api后台的服务在同一个机房甚至是同一台机器上跑, 甚至不需要使用HTTP发送请求, 直接用RPC来通信就可以, 这样在server端去获取数据就要比从客户端获取数据要快很多</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><pre><code>$ npx create-nuxt-app &lt;项目名&gt;
+$ npm run dev
+</code></pre><h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p><strong>1. asyncData、fetch周期都不存在Window对象</strong></p>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  <span class="token function">asyncData</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>window<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 服务端报错</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token function">fetch</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>window<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 服务端报错</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  created <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>window<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// undefined</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  mounted <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>window<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// Window {postMessage: ƒ, blur: ƒ, focus: ƒ, close: ƒ, frames: Window, …}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><strong>2. 配置错误页面</strong><br><strong>可以通过编辑 layouts/error.vue 文件来定制化错误页面.</strong></p>
+<pre class=" language-vue"><code class="language-vue"><template>
+  <div class="container">
+    <h1 v-if="error.statusCode === 404">页面不存在</h1>
+    <h1 v-else>应用发生错误异常</h1>
+    <nuxt-link to="/">首 页</nuxt-link>
+  </div>
+</template>
+
+<script>
+export default {
+  props: ['error'],
+  layout: 'blog' // 你可以为错误页面指定自定义的布局
+}
+</script>
+</code></pre>
+<p><strong>3. 自定义Loading页面</strong><br><strong>nuxt.config.js</strong></p>
+<pre class=" language-javascript"><code class="language-javascript">module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  loading<span class="token punctuation">:</span> <span class="token string">'~components/loading.vue'</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><strong>loading.vue</strong></p>
+<pre class=" language-vue"><code class="language-vue"><template lang="html">
+  <div class="loading-page" v-if="loading">
+    <p>Loading...</p>
+  </div>
+</template>
+
+<script>
+export default {
+  data: () => ({
+    loading: false
+  }),
+  methods: {
+    start () {
+      this.loading = true
+    },
+    finish () {
+      this.loading = false
+    }
+  }
+}
+</script>
+</code></pre>
+<p><strong>4. 校验参数</strong><br><strong>如果校验失败，则自动跳转到错误页面</strong></p>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  <span class="token function">validate</span><span class="token punctuation">(</span><span class="token punctuation">{</span> params<span class="token punctuation">,</span> query <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token regex">/^d+$/</span><span class="token punctuation">.</span><span class="token function">test</span><span class="token punctuation">(</span>params<span class="token punctuation">.</span>id<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// must be number</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><strong>5. Header、Footer等公共组件放哪？</strong><br><strong>vue-cli入口文件是app.vue，在nuxt开发当中则是./layout/default.vue</strong></p>
+<pre class=" language-vue"><code class="language-vue"><template>
+  <div id="app">
+    <!-- 公共头部组件 -->
+    <xxx-header></xxx-header>
+    <!-- 路由视图，相当于router-view -->
+    <nuxt/>
+    <!-- 公共底部组件 -->
+    <xxx-footer></xxx-footer>
+  </div>
+</template>
+</code></pre>
+<p><strong>6. 没有keep-alive</strong><br><strong>由于是服务端渲染，所以不支持组件的<code>keep-alive</code>，那自然<code>activated、deactivated</code>这两个生命周期<code>也没了</code></strong></p>
+<p><strong>7. 配置插件</strong><br><strong><code>所有插件</code>都写在<code>/plugins目录</code>下，这里以<code>vue-lazyload</code>为例</strong></p>
+<p><strong>plugins/lazy-load.js</strong></p>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">import</span> Vue <span class="token keyword">from</span> <span class="token string">'vue'</span>
+<span class="token keyword">import</span> VueLazyLoad <span class="token keyword">from</span> <span class="token string">'vue-lazyload'</span>
+
+Vue<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>VueLazyLoad<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+  loading<span class="token punctuation">:</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'~/assets/images/loading.jpg'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  error<span class="token punctuation">:</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'~/assets/images/error.jpg'</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre>
+<p><strong>nuxt.config.js</strong></p>
+<pre class=" language-javascript"><code class="language-javascript">module<span class="token punctuation">.</span>expors <span class="token operator">=</span> <span class="token punctuation">{</span>
+  plugins<span class="token punctuation">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      src<span class="token punctuation">:</span> <span class="token string">"~/plugins/lazy-load"</span><span class="token punctuation">,</span>
+      ssr<span class="token punctuation">:</span> <span class="token boolean">false</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><strong>8. 使用Axios，并配置全局拦截器，处理跨域</strong><br><strong><code>starter-template</code>模板，推荐使用<code>@nuxtjs/axios、@nuxtjs/proxy</code>，不需要在plugins配置</strong></p>
+<p><strong>安装依赖</strong></p>
+<pre><code>$ npm install @nuxtjs/axios @nuxtjs/proxy --save
+</code></pre><p><strong>使用、处理跨域</strong></p>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token comment" spellcheck="true">// nuxt.config.js</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  modules<span class="token punctuation">:</span> <span class="token punctuation">[</span> <span class="token string">'@nuxtjs/axios'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// 不需要加入@nuxtjs/proxy</span>
+  axios<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    proxy<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    prefix<span class="token punctuation">:</span> <span class="token string">'/api'</span><span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// baseURL</span>
+    credentials<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  proxy<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    <span class="token string">'/api/'</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+      target<span class="token punctuation">:</span> <span class="token string">'http://127.0.0.1:2001'</span><span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// 代理地址</span>
+      changeOrigin<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+      pathRewrite<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+        <span class="token string">'^/api'</span><span class="token punctuation">:</span> <span class="token string">''</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><strong>组件中使用</strong></p>
+<pre class=" language-vue"><code class="language-vue"><script>
+export default {
+  fetch ({ app }) {
+    console.log(app.$axios)
+  },
+  asyncData ({ app }) {
+    console.log(app.$axios)
+  },
+  created () {
+    console.log(this.$axios)
+  }
+}
+</script>
+</code></pre>
+<p><strong>不需要在plugins配置axios，但是如果要设置全局拦截器，那么就要新建一个/plugins/axios.js</strong></p>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">function</span> <span class="token punctuation">(</span>app<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">let</span> axios <span class="token operator">=</span> app<span class="token punctuation">.</span>$axios<span class="token punctuation">;</span> 
+ <span class="token comment" spellcheck="true">// 基本配置</span>
+  axios<span class="token punctuation">.</span>defaults<span class="token punctuation">.</span>timeout <span class="token operator">=</span> <span class="token number">10000</span>
+  axios<span class="token punctuation">.</span>defaults<span class="token punctuation">.</span>headers<span class="token punctuation">.</span>post<span class="token punctuation">[</span><span class="token string">'Content-Type'</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">'application/x-www-form-urlencoded'</span>
+
+  <span class="token comment" spellcheck="true">// 请求回调</span>
+  axios<span class="token punctuation">.</span><span class="token function">onRequest</span><span class="token punctuation">(</span>config <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+  <span class="token comment" spellcheck="true">// 返回回调</span>
+  axios<span class="token punctuation">.</span><span class="token function">onResponse</span><span class="token punctuation">(</span>res <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+  <span class="token comment" spellcheck="true">// 错误回调</span>
+  axios<span class="token punctuation">.</span><span class="token function">onError</span><span class="token punctuation">(</span>error <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><strong>然后在plugins配置它</strong></p>
+<pre class=" language-javascript"><code class="language-javascript">module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  plugins<span class="token punctuation">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      src<span class="token punctuation">:</span> <span class="token string">"~/plugins/axios"</span><span class="token punctuation">,</span>
+      ssr<span class="token punctuation">:</span> <span class="token boolean">false</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><strong>9. 默认Meta标签</strong><br><strong>nuxt.config.js</strong></p>
+<pre class=" language-javascript"><code class="language-javascript">module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  head<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    title<span class="token punctuation">:</span> <span class="token string">'your project title'</span><span class="token punctuation">,</span>
+    meta<span class="token punctuation">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span> charset<span class="token punctuation">:</span> <span class="token string">'utf-8'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> name<span class="token punctuation">:</span> <span class="token string">'viewport'</span><span class="token punctuation">,</span> content<span class="token punctuation">:</span> <span class="token string">'width=device-width, initial-scale=1'</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    link<span class="token punctuation">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span> rel<span class="token punctuation">:</span> <span class="token string">'stylesheet'</span><span class="token punctuation">,</span> href<span class="token punctuation">:</span> <span class="token string">'https://fonts.googleapis.com/css?family=Roboto'</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><strong>10. 页面组件特有的Meta标签</strong></p>
+<pre class=" language-vue"><code class="language-vue"><script>
+export default {
+  head () {
+    return {
+      meta: 
+      [
+        {
+          name: 'keywords',
+          content: '最强王者,今晚吃鸡'
+        },
+      ]
+    }
+  }
+}
+</script>
+</code></pre>
+<p><strong>11. 动态路由的Meta标签填充</strong><br><strong>游戏详情页面举例子，由于数据是异步获取的，需要把数据获取写在asyncData钩子，待数据获取成功才会渲染该页面组件</strong></p>
+<pre class=" language-vue"><code class="language-vue"><script>
+export default {
+  async asyncData ({ app, params }) {
+    let data = await app.$axios.get(`/appinfo/${params.id}`);
+    return {
+      appname: data.appinfo.appname
+    }
+  },
+  head () {
+    return {
+      meta: 
+      [
+        {
+          name: 'keywords',
+          content: `${this.appname},无限宝石,无限元宝`
+        },
+      ]
+    }
+  }
+}
+</script>
+</code></pre>
+<p><strong>12. 使用Vuex</strong><br><strong><code>nuxt</code>自己集成了<code>vuex</code>，所以<code>不需要安装</code>，<code>在/store目录下新建index.js</code>即可使用</strong></p>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">import</span> Vuex <span class="token keyword">from</span> <span class="token string">'vuex'</span>
+
+<span class="token keyword">let</span> store <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token keyword">new</span> <span class="token class-name">Vuex<span class="token punctuation">.</span>Store</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  state<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    token<span class="token punctuation">:</span> <span class="token string">''</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  mutations<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    setToken <span class="token punctuation">(</span>state<span class="token punctuation">,</span> token<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+       state<span class="token punctuation">.</span>token <span class="token operator">=</span> token
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> store
+</code></pre>
+<p><strong>13. 登录状态？</strong><br><strong>vue-cli项目中，可以用<code>vuex-persistedstate</code>，它可以使vuex的状态持久化，页面刷新都<code>不会丢失</code>，原理当然是localStorage啦！问题来了，<code>nuxt</code>项目怎么保存登录状态呢？当然上面这两种方法我们都可以使用，但是有个问题，由于在<code>created</code>钩子中不存在<code>window</code>对象(获取<code>cookie、localStorage</code>都需要<code>window</code>对象)，当需要判断是否存在<code>token</code>的时候，必须要在<code>mounted</code>进行操作，这说明页面进来的<code>一瞬间</code>你无法得知<code>是否已经登录了</code>，这会<code>导致</code>显示用户名、组件显示于隐藏都<code>慢半拍</code></strong></p>
+<p><strong><code>nuxt</code>非常友好，它提供了<code>fetch钩子</code>，还有<code>nuxtServerInit</code>，这两个钩子都运行在服务端并且我们能很<code>快速</code>地操作<code>store</code></strong></p>
+<p><strong>14. fetch的使用</strong><br><strong>如果页面组件设置了fetch方法，它会在组件每次加载前被调用（在服务端或切换至目标路由之前），此方法需要跟服务端的人员配合</strong></p>
+<pre class=" language-vue"><code class="language-vue"><script>
+export default {
+  async fetch ({ app, store, params }) {
+    let { data } = app.$axios.get('/token');
+    store.commit('setToken', data.token);
+  }
+}
+</script>
+</code></pre>
+<p><strong>15. nuxtServerInit</strong><br><strong>终极无敌方法</strong></p>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">import</span> Vuex <span class="token keyword">from</span> <span class="token string">'vuex'</span>
+
+<span class="token keyword">let</span> store <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token keyword">new</span> <span class="token class-name">Vuex<span class="token punctuation">.</span>Store</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  state<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    token<span class="token punctuation">:</span> <span class="token string">''</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  mutations<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    setToken <span class="token punctuation">(</span>state<span class="token punctuation">,</span> token<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+       state<span class="token punctuation">.</span>token <span class="token operator">=</span> token
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  actions<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    <span class="token function">nuxtServerInit</span><span class="token punctuation">(</span><span class="token punctuation">{</span> commit <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> req <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">let</span> cookie <span class="token operator">=</span> req<span class="token punctuation">.</span>headers<span class="token punctuation">.</span>cookie<span class="token punctuation">;</span>
+
+      <span class="token comment" spellcheck="true">// 将cookie转成json对象（自己实现该方法）</span>
+      <span class="token keyword">let</span> token <span class="token operator">=</span> <span class="token function">cookieparse</span><span class="token punctuation">(</span>cookie<span class="token punctuation">)</span><span class="token punctuation">.</span>token<span class="token punctuation">;</span>
+      <span class="token function">commit</span><span class="token punctuation">(</span><span class="token string">'setToken'</span><span class="token punctuation">,</span> token<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> store
+</code></pre>
+<p><strong>16. 封装自己的全局方法</strong></p>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">let</span> utils <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">let</span> printMsg <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span>msg<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    msg <span class="token operator">&amp;&amp;</span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>msg<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">let</span> otherFn <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span>msg<span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+
+  <span class="token keyword">return</span> <span class="token punctuation">{</span>
+    printMsg<span class="token punctuation">,</span>
+    otherFn
+  <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span>
+
+Vue<span class="token punctuation">.</span>prototype<span class="token punctuation">.</span>$utils<span class="token operator">=</span> utils
+</code></pre>
+<p><strong>组件调用</strong></p>
+<pre class=" language-vue"><code class="language-vue"><script>
+export default {
+  created() {
+    this.$zexin.message('小老弟，你怎么回事')
+  }
+}
+</script>
+</code></pre>
+<p><strong>需要在plugins中配置</strong></p>
+<p><strong>17. 全局样式</strong><br><strong>nuxt.config.js</strong></p>
+<pre class=" language-javascript"><code class="language-javascript">module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  css<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'~/assets/stylesheets/main.min.css'</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><strong>18. 使用Element-UI</strong><br><strong>还是plugins文件夹新建element-ui.js</strong></p>
+<pre class=" language-javascript"><code class="language-javascript"><span class="token comment" spellcheck="true">// 全局引入</span>
+<span class="token keyword">import</span> Vue <span class="token keyword">from</span> <span class="token string">'vue'</span>
+<span class="token keyword">import</span> ElementUI <span class="token keyword">from</span> <span class="token string">'element-ui'</span>
+
+Vue<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>ElementUI<span class="token punctuation">)</span>
+
+<span class="token comment" spellcheck="true">// 按需引入</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> Button<span class="token punctuation">,</span> Loading<span class="token punctuation">,</span> MessageBox <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'element-ui'</span>
+
+Vue<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>Button<span class="token punctuation">)</span>
+Vue<span class="token punctuation">.</span>prototype<span class="token punctuation">.</span>$loading <span class="token operator">=</span> Loading<span class="token punctuation">.</span>service
+Vue<span class="token punctuation">.</span>prototype<span class="token punctuation">.</span>$msgbox <span class="token operator">=</span> MessageBox
+</code></pre>
+<p><strong>nuxt.config.js</strong></p>
+<pre class=" language-javascript"><code class="language-javascript">module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  css<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'element-ui/lib/theme-chalk/index.css'</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  plugins<span class="token punctuation">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      src<span class="token punctuation">:</span> <span class="token string">"~/plugins/element"</span><span class="token punctuation">,</span>
+      ssr<span class="token punctuation">:</span> <span class="token boolean">true</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><strong>18. 如何使用sass预处理器</strong><br><strong>安装依赖</strong></p>
+<pre><code>$ npm install node-sass sass-loader --save
+</code></pre><p><strong>组件中使用(不需要其他的配置了)</strong></p>
+<pre class=" language-vue"><code class="language-vue"><style lang="scss" scoped>
+
+</style>
+</code></pre>
+<p><strong>19. fetch、asyncData、validate使用范围</strong><br><strong><code>只能在页面组件使用，也就是pages目录下的组件，而不是components目录下的组件，要有所区分</code></strong></p>
+<p><strong>20. 传统部署</strong></p>
+<pre><code>$ npm run build &amp;&amp; npm run start
+</code></pre><p><strong>21. pm2部署</strong><br><strong>pm2能永久保持应用程序活跃，无需停机即可重新加载它们，并不需要传统部署的.nuxt文件夹，该部署方法也跟生产环境一样包含热更新</strong></p>
+<p>全局安装</p>
+<pre><code>$ npm install pm2 -g
+</code></pre><p>启动服务</p>
+<pre><code>$ npm run build
+$ pm2 start ./node_modules/nuxt/bin/nuxt-start
+</code></pre><h2 id="要绕的坑"><a href="#要绕的坑" class="headerlink" title="要绕的坑"></a>要绕的坑</h2><p><strong>坑一： <code>vue-server-renderer版本要保持与vue版本一起更新, 如果有一方没有及时更新将会有很多尴尬的报错</code></strong></p>
+<blockquote>
+<ul>
+<li><strong>vue &amp; vue-server-renderer 2.3.0+</strong></li>
+<li><strong>vue-router 2.5.0+</strong></li>
+<li><strong>vue-loader 12.0.0+ &amp; vue-style-loader 3.0.0+</strong></li>
+</ul>
+</blockquote>
+<p><strong>如果先前已经使用过 Vue 2.2 的服务器端渲染(SSR)，推荐的代码结构现在略有不同（使用新的 runInNewContext 选项，并设置为 false）</strong></p>
+<p><strong>坑二: <code>数据响应</code></strong><br><strong>不希望不同的用户每次访问的都是同一个server实例, 这会导致非常麻烦的交叉请求的数据污染问题</strong><br><strong>所以每次打开一定要是一个全新的实例, 每次都是工厂创建出来的新的实例</strong><br><strong>由于把请求数据的过程放在了server端来完成, 所以也不需要在前端做出数据响应的操作, 这样可以规避<code>数据</code>转换为<code>响应式对象</code>所产生的性能开销</strong><br><strong>可以说是将多个ajax的请求合并为了一个</strong><br><strong>也就是说平时在客户端根据后台返回的数据来做出if else 的判断都可以不用写了, 比如说tabel的loding组件等等</strong></p>
+<p><strong>坑三：<code>组件生命周期</code></strong><br><strong>众所周知，<code>Vue</code>的生命周期全都跑在<code>客户端(浏览器)</code>，而<code>Nuxt</code>的生命周期有些在<code>服务端(Node)，客户端，甚至两边都在</code></strong><br><strong>由于没有动态更新, 所有的生命周期钩子函数中只有<code>beforeCreate</code>和<code>created</code>会在服务端渲染(SSR)过程中被调用. </strong><br><strong>所以在写代码的过程中, 处理交互和初始化数据的时候不要写在这两个生命周期里, 因为在server端执行过之后, 在客户端就不执行了, 它们是同一套生命周期</strong></p>
+<blockquote>
+<p><strong>我们先来想一下，在纯浏览器渲染的Vue项目中，我们是怎么获取异步数据并渲染到组件中的？一般是在created或者mounted生命周期里发起异步请求，然后在成功回调里执行this.data = xxx，Vue监听到数据发生改变，走后面的Dom Diff，打patch，做DOM更新。</strong></p>
+<p><strong>那么服务端渲染可不可以也这么做呢？答案是不行的。</strong></p>
+<p><strong>在mounted里肯定不行，因为SSR都没有mounted生命周期，所以在这里肯定不行。</strong><br><strong>在beforeCreate里发起异步请求是否可以呢，也是不行的。因为请求是异步的，可能还没有等接口返回，服务端就已经把html字符串拼接出来了。</strong></p>
+<p><strong>所以，参考一下官方文档，可以得到以下思路：</strong></p>
+<p><strong>在渲染前，要预先获取所有需要的异步数据，然后存到Vuex的store中。</strong><br><strong>在后端渲染时，通过Vuex将获取到的数据注入到相应组件中。</strong><br><strong>把store中的数据设置到window.<strong>INITIAL_STATE</strong>属性中。</strong><br><strong>在浏览器环境中，通过Vuex将window.<strong>INITIAL_STATE</strong>里面的数据注入到相应组件中。</strong></p>
+<p><strong>正常情况下，通过这几个步骤，服务端吐出来的html字符串相应组件的数据都是最新的，所以第4步并不会引起DOM更新，但如果出了某些问题，吐出来的html字符串没有相应数据，Vue也可以在浏览器端通过`Vuex注入数据，进行DOM更新。</strong></p>
+</blockquote>
+<p><strong>所以要将类似的操作放在beforeMounted或mounted钩子中执行</strong><br><strong>而希望数据的获取越早越好,页面的展示越快越好, 通常会把请求放在created里面去进行操作</strong><br><strong>而且在server端created创建的副作用操作如定时器, 你在客户端是无法销毁的</strong></p>
+<p><strong>坑四: <code>自定义指令</code></strong><br><strong>大部分的自定义指令是用来操作DOM的, 而在server端是没有window也没用document的,所以就会报错</strong><br><strong>这块就看文档吧, 稍微有些复杂</strong></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><h3 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h3><p>大部分的小团队项目的node服务都是基于express来做的, 处理起来比较简单, 基本上之拦截请求, 剩下的交给vue-server来处理, 之前只需要一个<code>npm run build</code>就可以完成打包, 之后将静态文件部署至服务器就可以了, 现在多了一个server, 就需要前端自己来维护它, 前期可能要经常去看进程管理, 去看内存有没有溢出等一系列问题, 这也是需要权衡的的部分, 而且通常这种情况下搭建的server健壮性是很弱的, 需要有足够宽的知识面。</p>
+<h3 id="更多的服务器负载"><a href="#更多的服务器负载" class="headerlink" title="更多的服务器负载"></a>更多的服务器负载</h3><p>在Node.js渲染过程中, server端的CPU负担要比仅仅只提供静态资源的SPA大很多, 需要考虑在server端的<code>高并发</code>以及<code>负载均衡</code>等维护成本, 可能需要前端人员去兼职运维的工作。</p>
+<h3 id="是否真的需要’它’"><a href="#是否真的需要’它’" class="headerlink" title="是否真的需要’它’"></a>是否真的需要’它’</h3><p>项目需要SEO和很频繁的数据IO那么可能需要SSR, 但如果需要进行很多密集的运算的时候, 那么SSR的优势将越来越小。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Vue-SSR/" rel="tag"># Vue SSR</a>
+          
+            <a href="/tags/Nuxt-js/" rel="tag"># Nuxt.js</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/01/sth/JavaScript的事件循环机制/" rel="next" title="JavaScript的事件循环机制">
+                <i class="fa fa-chevron-left"></i> JavaScript的事件循环机制
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Maxin</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">28</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#SSR场景"><span class="nav-number">1.</span> <span class="nav-text">SSR场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nuxt-js的优点"><span class="nav-number">2.</span> <span class="nav-text">Nuxt.js的优点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">3.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用"><span class="nav-number">4.</span> <span class="nav-text">使用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number"></span> <span class="nav-text">页面不存在</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number"></span> <span class="nav-text">应用发生错误异常</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#要绕的坑"><span class="nav-number">1.</span> <span class="nav-text">要绕的坑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">2.</span> <span class="nav-text">总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#部署"><span class="nav-number">2.1.</span> <span class="nav-text">部署</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#更多的服务器负载"><span class="nav-number">2.2.</span> <span class="nav-text">更多的服务器负载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#是否真的需要’它’"><span class="nav-number">2.3.</span> <span class="nav-text">是否真的需要’它’</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Maxin</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

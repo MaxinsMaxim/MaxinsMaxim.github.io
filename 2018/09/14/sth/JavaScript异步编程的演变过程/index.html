@@ -99,7 +99,7 @@ api接口调用
 大数据量的数据处理
 
 弊">
-<meta property="og:updated_time" content="2018-11-02T05:35:46.014Z">
+<meta property="og:updated_time" content="2019-02-16T11:31:43.608Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JavaScript异步编程的演变过程">
 <meta name="twitter:description" content="callback说到异步编程，就不得不谈JavaScript是单线程运行的，引擎将脚本从上到下依次执行，当然前提是都是同步代码。如果当前执行一个耗时操作的话，那么后面的代码就会一直等上面执行完毕，这样一来就导致大量时间被浪费。所以，如果想在耗时操作结束后做点别的事，并且不能影响与这个操作无关的代码执行，就得使用回调函数
@@ -422,14 +422,6 @@ myEmitter<span class="token punctuation">.</span><span class="token function">em
   console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span>
 </code></pre>
-<p>按顺序请求接口数据</p>
-<pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">fetchFn</span><span class="token punctuation">(</span>url<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">return</span> <span class="token function">fetch</span><span class="token punctuation">(</span>url<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span>res <span class="token operator">=</span><span class="token operator">></span> res<span class="token punctuation">.</span><span class="token function">json</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-<span class="token punctuation">}</span>
-<span class="token keyword">let</span> fruit <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'apple'</span><span class="token punctuation">,</span> <span class="token string">'banana'</span><span class="token punctuation">,</span> <span class="token string">'strawberry'</span><span class="token punctuation">,</span> <span class="token string">'watermelon'</span><span class="token punctuation">]</span>
-<span class="token keyword">let</span> appleApi <span class="token operator">=</span> <span class="token function">fetchFn</span><span class="token punctuation">(</span><span class="token string">'https://cjjl.chelun.com/ChinaNiceCoach/getGiftList?fruit=apple'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">let</span> bananaApi <span class="token operator">=</span> <span class="token string">'https://google.com/getApple?sort=1'</span><span class="token punctuation">;</span>
-</code></pre>
 <h3 id="Promise-all"><a href="#Promise-all" class="headerlink" title="Promise.all"></a>Promise.all</h3><p>如果多个异步任务没有先后顺序依赖，可以并发执行，并且需要在所有任务执行完毕后得到结果的话，可以使用Promise.all</p>
 <p>p1,p2是两个promise对象实例，获得成功结果的数组里面的数据顺序和Promise.all接收到的数组顺序是一致的，即p1的结果在前，即便p1的结果获取的比p2要晚。</p>
 <pre class=" language-javascript"><code class="language-javascript"><span class="token keyword">let</span> wake <span class="token operator">=</span> <span class="token punctuation">(</span>time<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
@@ -658,7 +650,7 @@ console<span class="token punctuation">.</span><span class="token function">log<
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 </code></pre>
-<p><a href="https://www.cnblogs.com/nullcc/p/5841182.html" target="_blank" rel="external">文章1</a><br><a href="https://www.cnblogs.com/wuguanglin/p/EventLoop.html" target="_blank" rel="external">文章2</a><br><a href="https://nullcc.github.io/" target="_blank" rel="external">博客</a></p>
+<p>await关键字会把后面跟的返回值转为Promise对象</p>
 
       
     </div>
@@ -782,7 +774,7 @@ console<span class="token punctuation">.</span><span class="token function">log<
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-count">28</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -804,7 +796,7 @@ console<span class="token punctuation">.</span><span class="token function">log<
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-count">26</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
@@ -857,7 +849,7 @@ console<span class="token punctuation">.</span><span class="token function">log<
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
